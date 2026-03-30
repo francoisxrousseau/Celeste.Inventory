@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Commands\" />
+    <Folder Include="Features\Handlers\" />
+    <Folder Include="Features\Queries\" />
+    <Folder Include="Mapping\" />
+    <Folder Include="Installers\" />
+    <Folder Include="Hubs\" />
+  </ItemGroup>
+
+</Project>

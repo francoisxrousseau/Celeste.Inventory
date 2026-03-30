@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/.claude/">
+    <File Path=".claude/CLAUDE.md" />
+  </Folder>
+  <Folder Name="/.claude/rules/" />
+  <Folder Name="/.claude/skills/" />
+  <Folder Name="/.github/" />
+  <Folder Name="/.github/workflows/" />
+  <Folder Name="/.kube/" />
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Celeste.Inventory.Api.Sdk/Celeste.Inventory.Api.Sdk.csproj" Id="3a3152b6-dc6d-43e0-a1a1-01367ed06825" />
+    <Project Path="src/Celeste.Inventory.Api/Celeste.Inventory.Api.csproj" />
+    <Project Path="src/Celeste.Inventory.Application/Celeste.Inventory.Application.csproj" Id="da4b50c8-64fd-43f6-b79a-6487b522dec5" />
+    <Project Path="src/Celeste.Inventory.Common/Celeste.Inventory.Common.csproj" Id="ee491f7d-eef9-4a97-993f-0e2f5f220115" />
+    <Project Path="src/Celeste.Inventory.Core/Celeste.Inventory.Core.csproj" Id="f16d2f68-ed70-4705-b60b-d9f6f772a00f" />
+    <Project Path="src/Celeste.Inventory.Events/Celeste.Inventory.Events.csproj" Id="c7b14def-f83d-43b3-b91b-02df9a21e269" />
+    <Project Path="src/Celeste.Inventory.Infrastructure/Celeste.Inventory.Infrastructure.csproj" Id="433e262d-2ad4-44b0-82e9-c11d7fa256d8" />
+  </Folder>
+</Solution>
