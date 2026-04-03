@@ -42,7 +42,13 @@ Api (Controller)
 ### Conventions
 
 - **DI registration** lives in `Installers/` folders within each project — new services/repos should be registered there.
-- **Documentation**: All public types and members must have XML doc comments (`/// <summary>`). Keep summaries to 2–3 lines maximum.
+- **Documentation**: All public types and members must have XML doc comments. Comments must always be multiline with a tab-indented body, even for single-line text. Follow this format exactly:
+  ```csharp
+  /// <summary>
+  ///     Extension methods for mapping between <see cref="FooDocument"/> and <see cref="Foo"/>.
+  /// </summary>
+  ```
+  Keep summaries to 2–3 lines maximum. `<param>`, `<returns>`, and `<remarks>` tags follow the same multiline, tab-indented style.
 - **Options pattern**: All configuration must be declared in a dedicated options file and grouped into a focused options class per concern. Resolve options exclusively via `IOptions<T>` (or `IOptionsSnapshot<T>` / `IOptionsMonitor<T>` where appropriate) — never bind config directly.
 - **`.claude/rules/`** may contain project-specific rules — check there for additional guidance.
 - **Async code**: Whenever possible, use async overload of methods, use CancellationToken with default value overload.
