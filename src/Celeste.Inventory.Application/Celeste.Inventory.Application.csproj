@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Emit.Mediator" Version="1.0.0-alpha.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Celeste.Inventory.Common\Celeste.Inventory.Common.csproj" />
+    <ProjectReference Include="..\Celeste.Inventory.Core\Celeste.Inventory.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Features\Commands\" />
     <Folder Include="Features\Handlers\" />
     <Folder Include="Features\Queries\" />

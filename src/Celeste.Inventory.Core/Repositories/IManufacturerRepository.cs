@@ -36,6 +36,66 @@ public interface IManufacturerRepository
     Task UpdateAsync(Manufacturer manufacturer, CancellationToken cancellationToken = default);
 
     /// <summary>
+    ///     Atomically updates a manufacturer and returns the updated entity.
+    /// </summary>
+    /// <param name="id">
+    ///     The manufacturer identifier.
+    /// </param>
+    /// <param name="name">
+    ///     The updated manufacturer name.
+    /// </param>
+    /// <param name="contactEmail">
+    ///     The updated optional contact email.
+    /// </param>
+    /// <param name="contactPhone">
+    ///     The updated optional contact phone number.
+    /// </param>
+    /// <param name="updatedBy">
+    ///     The user responsible for the update.
+    /// </param>
+    /// <param name="updatedAt">
+    ///     The UTC update timestamp.
+    /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token for the asynchronous operation.
+    /// </param>
+    /// <returns>
+    ///     The updated manufacturer, or <see langword="null"/> when no active manufacturer matches.
+    /// </returns>
+    Task<Manufacturer?> UpdateAsync(
+        Guid id,
+        string name,
+        string? contactEmail,
+        string? contactPhone,
+        string? updatedBy,
+        DateTime updatedAt,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Atomically soft deletes a manufacturer.
+    /// </summary>
+    /// <param name="id">
+    ///     The manufacturer identifier.
+    /// </param>
+    /// <param name="deletedBy">
+    ///     The user responsible for the delete.
+    /// </param>
+    /// <param name="deletedAt">
+    ///     The UTC delete timestamp.
+    /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token for the asynchronous operation.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> when a manufacturer was deleted; otherwise, <see langword="false"/>.
+    /// </returns>
+    Task<bool> DeleteAsync(
+        Guid id,
+        string? deletedBy,
+        DateTime deletedAt,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     ///     Gets a manufacturer by id.
     /// </summary>
     /// <param name="id">

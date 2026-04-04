@@ -24,4 +24,19 @@ public sealed class Manufacturer : AuditableEntity
      ///     Gets the contact phone number for the manufacturer.
      /// </summary>
     public string? ContactPhone { get; set; }
+
+    /// <summary>
+    ///     Normalizes free-text input for deterministic manufacturer comparisons.
+    /// </summary>
+    /// <param name="value">
+    ///     The value to normalize.
+    /// </param>
+    /// <returns>
+    ///     The trimmed invariant-cased value, or <see langword="null"/> when the input is empty.
+    /// </returns>
+    public static string? NormalizeSearchText(string? value)
+    {
+        var trimmed = value?.Trim();
+        return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed.ToUpperInvariant();
+    }
 }
