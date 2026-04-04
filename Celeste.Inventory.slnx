@@ -19,4 +19,7 @@
     <Project Path="src/Celeste.Inventory.Events/Celeste.Inventory.Events.csproj" Id="c7b14def-f83d-43b3-b91b-02df9a21e269" />
     <Project Path="src/Celeste.Inventory.Infrastructure/Celeste.Inventory.Infrastructure.csproj" Id="433e262d-2ad4-44b0-82e9-c11d7fa256d8" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Celeste.Inventory.Core.Tests/Celeste.Inventory.Core.Tests.csproj" />
+  </Folder>
 </Solution>

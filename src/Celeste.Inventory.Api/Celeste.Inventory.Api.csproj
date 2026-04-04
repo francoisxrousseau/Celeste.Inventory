@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Emit.Abstractions" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.Kafka" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.Kafka.AvroSerializer" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.Kafka.HealthChecks" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.Kafka.JsonSerializer" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.Mediator" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.MongoDB" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.OpenTelemetry" Version="1.0.0-alpha.8" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
   </ItemGroup>
 
