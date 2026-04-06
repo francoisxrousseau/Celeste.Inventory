@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "ManufacturerEvent",
+  "namespace": "Celeste.Inventory.Events",
+  "fields": [
+    { "name": "Id", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "Name", "type": [ "null", "string" ], "default": null },
+    { "name": "ContactEmail", "type": [ "null", "string" ], "default": null },
+    { "name": "ContactPhone", "type": [ "null", "string" ], "default": null },
+    { "name": "EventType", "type": "string" },
+    { "name": "User", "type": "string" },
+    { "name": "Date", "type": { "type": "long", "logicalType": "timestamp-millis" } }
+  ]
+}
