@@ -20,6 +20,7 @@
     <Project Path="src/Celeste.Inventory.Infrastructure/Celeste.Inventory.Infrastructure.csproj" Id="433e262d-2ad4-44b0-82e9-c11d7fa256d8" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Celeste.Inventory.Api.Tests/Celeste.Inventory.Api.Tests.csproj" />
     <Project Path="tests/Celeste.Inventory.Application.Tests/Celeste.Inventory.Application.Tests.csproj" />
     <Project Path="tests/Celeste.Inventory.Core.Tests/Celeste.Inventory.Core.Tests.csproj" />
     <Project Path="tests/Celeste.Inventory.Infrastructure.Tests/Celeste.Inventory.Infrastructure.Tests.csproj" />
