@@ -4,6 +4,8 @@
 - Domain layer (entity, rules, tests)
 - Application layer (commands, queries, handlers)
 - Infrastructure layer (repository, mapping, Mongo integration)
+- API layer (controllers, validation, request/response binding)
+- Event contract and bootstrap/composition wiring
 
 ## Decisions
 - Name: trimmed, culture-invariant, case-insensitive uniqueness
@@ -12,11 +14,8 @@
 - Search: case-insensitive substring
 - Kafka topic: celeste.inventory.manufacturer
 
-## Next Step
-API layer:
-- controller
-- validation
-- request/response binding
+## Status
+Completed
 
 ## Constraints
 - use TDD skill

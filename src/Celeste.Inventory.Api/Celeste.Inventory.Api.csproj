@@ -22,6 +22,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Celeste.Inventory.Application\Celeste.Inventory.Application.csproj" />
     <ProjectReference Include="..\Celeste.Inventory.Common\Celeste.Inventory.Common.csproj" />
+    <ProjectReference Include="..\Celeste.Inventory.Events\Celeste.Inventory.Events.csproj" />
+    <ProjectReference Include="..\Celeste.Inventory.Infrastructure\Celeste.Inventory.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
