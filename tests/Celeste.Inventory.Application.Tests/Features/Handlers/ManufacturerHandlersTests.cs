@@ -4,6 +4,7 @@ using Celeste.Inventory.Application.Features.Queries;
 using Celeste.Inventory.Common.Responses;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Exceptions;
+using Celeste.Inventory.Core.Identity;
 using Celeste.Inventory.Core.Repositories;
 using Xunit;
 
@@ -18,10 +19,11 @@ public sealed class ManufacturerHandlersTests
     public async Task CreateHandler_WithUniqueName_CreatesTrimmedManufacturer()
     {
         var repository = new FakeManufacturerRepository();
-        var handler = new CreateManufacturerHandler(repository);
+        var currentUser = new FakeCurrentUserAccessor { UserId = "alice" };
+        var handler = new CreateManufacturerHandler(repository, currentUser);
 
         var response = await handler.HandleAsync(
-            new CreateManufacturerCommand("  Celeste Labs  ", "contact@celeste.test", "4165551234", "alice", Utc(2026, 4, 3, 12, 0)),
+            new CreateManufacturerCommand("  Celeste Labs  ", "contact@celeste.test", "4165551234", Utc(2026, 4, 3, 12, 0)),
             CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, response.Id);
@@ -44,10 +46,11 @@ public sealed class ManufacturerHandlersTests
             CreatedAt = Utc(2026, 4, 2, 12, 0),
         });
 
-        var handler = new CreateManufacturerHandler(repository);
+        var currentUser = new FakeCurrentUserAccessor { UserId = "alice" };
+        var handler = new CreateManufacturerHandler(repository, currentUser);
 
         var action = () => handler.HandleAsync(
-            new CreateManufacturerCommand("  celeste labs  ", null, null, "alice", Utc(2026, 4, 3, 12, 0)),
+            new CreateManufacturerCommand("  celeste labs  ", null, null, Utc(2026, 4, 3, 12, 0)),
             CancellationToken.None);
 
         await Assert.ThrowsAsync<DuplicateManufacturerNameException>(action);
@@ -70,10 +73,11 @@ public sealed class ManufacturerHandlersTests
         var repository = new FakeManufacturerRepository();
         repository.Items.Add(manufacturer);
 
-        var handler = new UpdateManufacturerHandler(repository);
+        var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
+        var handler = new UpdateManufacturerHandler(repository, currentUser);
 
         var response = await handler.HandleAsync(
-            new UpdateManufacturerCommand(manufacturer.Id, "  New Name  ", "new@celeste.test", "6475559999", "bob", Utc(2026, 4, 3, 9, 30)),
+            new UpdateManufacturerCommand(manufacturer.Id, "  New Name  ", "new@celeste.test", "6475559999", Utc(2026, 4, 3, 9, 30)),
             CancellationToken.None);
 
         Assert.Equal(manufacturer.Id, response.Id);
@@ -91,10 +95,11 @@ public sealed class ManufacturerHandlersTests
     public async Task UpdateHandler_WhenManufacturerMissing_ThrowsManufacturerNotFoundException()
     {
         var repository = new FakeManufacturerRepository();
-        var handler = new UpdateManufacturerHandler(repository);
+        var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
+        var handler = new UpdateManufacturerHandler(repository, currentUser);
 
         var action = () => handler.HandleAsync(
-            new UpdateManufacturerCommand(Guid.NewGuid(), "Celeste Labs", null, null, "bob", Utc(2026, 4, 3, 9, 30)),
+            new UpdateManufacturerCommand(Guid.NewGuid(), "Celeste Labs", null, null, Utc(2026, 4, 3, 9, 30)),
             CancellationToken.None);
 
         await Assert.ThrowsAsync<ManufacturerNotFoundException>(action);
@@ -113,10 +118,11 @@ public sealed class ManufacturerHandlersTests
         var repository = new FakeManufacturerRepository();
         repository.Items.Add(manufacturer);
 
-        var handler = new DeleteManufacturerHandler(repository);
+        var currentUser = new FakeCurrentUserAccessor { UserId = "charlie" };
+        var handler = new DeleteManufacturerHandler(repository, currentUser);
 
         await handler.HandleAsync(
-            new DeleteManufacturerCommand(manufacturer.Id, "charlie", Utc(2026, 4, 4, 10, 15)),
+            new DeleteManufacturerCommand(manufacturer.Id, Utc(2026, 4, 4, 10, 15)),
             CancellationToken.None);
 
         Assert.Equal("charlie", manufacturer.DeletedBy);
@@ -141,10 +147,11 @@ public sealed class ManufacturerHandlersTests
         var repository = new FakeManufacturerRepository();
         repository.Items.Add(manufacturer);
 
-        var handler = new DeleteManufacturerHandler(repository);
+        var currentUser = new FakeCurrentUserAccessor { UserId = "dana" };
+        var handler = new DeleteManufacturerHandler(repository, currentUser);
 
         var action = () => handler.HandleAsync(
-            new DeleteManufacturerCommand(manufacturer.Id, "dana", Utc(2026, 4, 5, 11, 45)),
+            new DeleteManufacturerCommand(manufacturer.Id, Utc(2026, 4, 5, 11, 45)),
             CancellationToken.None);
 
         await Assert.ThrowsAsync<ManufacturerNotFoundException>(action);
@@ -357,5 +364,12 @@ public sealed class ManufacturerHandlersTests
         {
             return value.Trim().ToUpperInvariant();
         }
+    }
+
+    private sealed class FakeCurrentUserAccessor : ICurrentUserAccessor
+    {
+        public string? UserId { get; init; }
+
+        public string? Name { get; init; }
     }
 }

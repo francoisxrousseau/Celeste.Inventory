@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Celeste.Inventory.Api\Celeste.Inventory.Api.csproj" />
     <ProjectReference Include="..\..\src\Celeste.Inventory.Application\Celeste.Inventory.Application.csproj" />
     <ProjectReference Include="..\..\src\Celeste.Inventory.Common\Celeste.Inventory.Common.csproj" />
