@@ -47,4 +47,21 @@ public sealed class ManufacturersControllerOpenApiContractTests
         Assert.Contains(typeof(PagedManufacturersResponse), producesTypes);
         Assert.Contains(typeof(ManufacturerCountResponse), producesTypes);
     }
+
+    /// <summary>
+    ///     Ensures the create endpoint targets a named route for the get-by-id location.
+    /// </summary>
+    [Fact]
+    public void GetByIdAsync_DeclaresNamedRoute()
+    {
+        var method = typeof(ManufacturersController).GetMethod(nameof(ManufacturersController.GetByIdAsync));
+
+        Assert.NotNull(method);
+
+        var routeAttribute = method!.GetCustomAttributes(typeof(HttpGetAttribute), inherit: true)
+            .Cast<HttpGetAttribute>()
+            .Single();
+
+        Assert.Equal("GetManufacturerById", routeAttribute.Name);
+    }
 }

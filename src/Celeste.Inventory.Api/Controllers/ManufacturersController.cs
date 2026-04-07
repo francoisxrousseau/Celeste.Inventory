@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 [Route("manufacturers")]
 public sealed class ManufacturersController(IMediator mediator) : ControllerBase
 {
+    private const string GetManufacturerByIdRouteName = "GetManufacturerById";
+
     /// <summary>
     ///     Creates a manufacturer by delegating to the application layer.
     /// </summary>
@@ -48,7 +50,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
             cancellationToken);
         var apiResponse = response.ToApiModel();
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = apiResponse.Id }, apiResponse);
+        return CreatedAtRoute(GetManufacturerByIdRouteName, new { id = apiResponse.Id }, apiResponse);
     }
 
     /// <summary>
@@ -66,7 +68,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
     /// <returns>
     ///     The manufacturer response.
     /// </returns>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = GetManufacturerByIdRouteName)]
     [Authorize(Policy = AuthorizationPolicies.ManufacturerRead)]
     [ProducesResponseType<ManufacturerResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]

@@ -46,6 +46,7 @@ public static class AuthenticationInstaller
             })
             .AddJwtBearer(options =>
             {
+                options.MapInboundClaims = false;
                 options.Authority = authenticationOptions.Authority;
                 options.Audience = authenticationOptions.Audience;
                 options.RequireHttpsMetadata = authenticationOptions.RequireHttpsMetadata;

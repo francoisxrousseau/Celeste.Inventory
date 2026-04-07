@@ -11,6 +11,7 @@ using Emit.Mediator.DependencyInjection;
 using Emit.MongoDB.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 /// <summary>
 ///     Registers manufacturer-specific infrastructure and Emit bootstrap services.
@@ -87,6 +88,12 @@ public static class ManufacturerBootstrapInstaller
                 });
             });
         });
+
+        // Temporarily register the ActivityEnricherInvoker from Emit to ensure activity enrichment works correctly until Emit provides a public API for this.
+        var activityEnricherInvokerType = Type.GetType("Emit.Tracing.ActivityEnricherInvoker, Emit");
+
+        if (activityEnricherInvokerType is not null)
+            services.Replace(ServiceDescriptor.Singleton(activityEnricherInvokerType, activityEnricherInvokerType));
 
         return services;
     }
