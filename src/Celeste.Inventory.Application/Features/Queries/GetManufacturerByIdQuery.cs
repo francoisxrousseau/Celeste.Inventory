@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Application.Features.Queries;
+
 using Celeste.Inventory.Common.Responses;
 using Emit.Mediator;
-
-namespace Celeste.Inventory.Application.Features.Queries;
 
 /// <summary>
 ///	Represents a request to fetch a manufacturer by identifier.

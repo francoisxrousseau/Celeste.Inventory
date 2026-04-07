@@ -1,9 +1,9 @@
+namespace Celeste.Inventory.Api.Filters;
+
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-
-namespace Celeste.Inventory.Api.Filters;
 
 /// <summary>
 ///     Executes registered FluentValidation validators for bound action arguments.

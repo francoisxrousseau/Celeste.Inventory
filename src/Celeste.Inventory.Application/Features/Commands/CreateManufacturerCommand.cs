@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Application.Features.Commands;
+
 using Celeste.Inventory.Common.Responses;
 using Emit.Mediator;
-
-namespace Celeste.Inventory.Application.Features.Commands;
 
 /// <summary>
 ///	Represents a request to create a manufacturer.

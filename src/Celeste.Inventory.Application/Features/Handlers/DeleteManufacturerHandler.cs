@@ -1,10 +1,10 @@
+namespace Celeste.Inventory.Application.Features.Handlers;
+
 using Celeste.Inventory.Application.Features.Commands;
 using Celeste.Inventory.Core.Exceptions;
 using Celeste.Inventory.Core.Identity;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Mediator;
-
-namespace Celeste.Inventory.Application.Features.Handlers;
 
 /// <summary>
 ///	Handles manufacturer delete requests.

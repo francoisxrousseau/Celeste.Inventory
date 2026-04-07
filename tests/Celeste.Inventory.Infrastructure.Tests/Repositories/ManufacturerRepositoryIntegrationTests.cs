@@ -1,11 +1,11 @@
+namespace Celeste.Inventory.Infrastructure.Tests.Repositories;
+
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Infrastructure.Documents;
 using Celeste.Inventory.Infrastructure.Repositories;
 using Mongo2Go;
 using MongoDB.Driver;
 using Xunit;
-
-namespace Celeste.Inventory.Infrastructure.Tests.Repositories;
 
 /// <summary>
 ///     Tests manufacturer repository persistence behavior against MongoDB.

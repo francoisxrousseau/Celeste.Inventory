@@ -1,3 +1,5 @@
+namespace Celeste.Inventory.Infrastructure.Installers;
+
 using Celeste.Inventory.Core.Repositories;
 using Celeste.Inventory.Infrastructure.Options;
 using Celeste.Inventory.Infrastructure.Repositories;
@@ -5,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-
-namespace Celeste.Inventory.Infrastructure.Installers;
 
 /// <summary>
 ///     Registers infrastructure persistence services and database dependencies.

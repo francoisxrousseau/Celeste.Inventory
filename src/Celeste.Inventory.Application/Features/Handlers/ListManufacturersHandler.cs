@@ -1,11 +1,11 @@
+namespace Celeste.Inventory.Application.Features.Handlers;
+
 using Celeste.Inventory.Application.Features.Queries;
 using Celeste.Inventory.Application.Mapping;
 using Celeste.Inventory.Common.Responses;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Mediator;
-
-namespace Celeste.Inventory.Application.Features.Handlers;
 
 /// <summary>
 ///	Handles paged manufacturer list queries.

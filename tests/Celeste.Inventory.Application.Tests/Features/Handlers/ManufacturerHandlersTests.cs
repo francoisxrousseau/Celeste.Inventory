@@ -1,14 +1,13 @@
+namespace Celeste.Inventory.Application.Tests.Features.Handlers;
+
 using Celeste.Inventory.Application.Features.Commands;
 using Celeste.Inventory.Application.Features.Handlers;
 using Celeste.Inventory.Application.Features.Queries;
-using Celeste.Inventory.Common.Responses;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Exceptions;
 using Celeste.Inventory.Core.Identity;
 using Celeste.Inventory.Core.Repositories;
 using Xunit;
-
-namespace Celeste.Inventory.Application.Tests.Features.Handlers;
 
 /// <summary>
 ///     Tests observable manufacturer application handler behavior.

@@ -1,6 +1,6 @@
-using Celeste.Inventory.Core.Domain;
-
 namespace Celeste.Inventory.Core.Repositories;
+
+using Celeste.Inventory.Core.Domain;
 
 /// <summary>
 ///     Defines data access operations for manufacturer aggregates.

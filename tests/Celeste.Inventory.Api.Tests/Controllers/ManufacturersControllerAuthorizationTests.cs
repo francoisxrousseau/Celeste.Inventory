@@ -1,10 +1,10 @@
+namespace Celeste.Inventory.Api.Tests.Controllers;
+
 using Celeste.Inventory.Api.Authorization;
 using Celeste.Inventory.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-namespace Celeste.Inventory.Api.Tests.Controllers;
 
 /// <summary>
 ///     Verifies manufacturer endpoint authorization metadata.

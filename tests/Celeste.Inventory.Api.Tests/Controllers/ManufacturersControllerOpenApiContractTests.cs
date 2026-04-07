@@ -1,8 +1,8 @@
+namespace Celeste.Inventory.Api.Tests.Controllers;
+
 using Celeste.Inventory.Api.Controllers;
 using Celeste.Inventory.Api.Models.Manufacturers;
 using Microsoft.AspNetCore.Mvc;
-
-namespace Celeste.Inventory.Api.Tests.Controllers;
 
 /// <summary>
 ///     Verifies the documented manufacturer API contract types.

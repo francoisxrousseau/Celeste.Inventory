@@ -1,3 +1,5 @@
+namespace Celeste.Inventory.Api.Installers;
+
 using Celeste.Inventory.Api.Options;
 using Celeste.Inventory.Application.Features.Handlers;
 using Celeste.Inventory.Events;
@@ -9,8 +11,6 @@ using Emit.Mediator.DependencyInjection;
 using Emit.MongoDB.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-namespace Celeste.Inventory.Api.Installers;
 
 /// <summary>
 ///     Registers manufacturer-specific infrastructure and Emit bootstrap services.

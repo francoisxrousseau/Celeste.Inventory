@@ -1,10 +1,9 @@
+namespace Celeste.Inventory.Api.Tests.Identity;
+
 using System.Security.Claims;
 using Celeste.Inventory.Api.Identity;
 using ApiAuthenticationOptions = Celeste.Inventory.Api.Options.AuthenticationOptions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-
-namespace Celeste.Inventory.Api.Tests.Identity;
 
 /// <summary>
 ///     Covers HTTP-backed current-user access behavior.

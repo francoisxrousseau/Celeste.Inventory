@@ -1,3 +1,5 @@
+namespace Celeste.Inventory.Api.Controllers;
+
 using Celeste.Inventory.Api.Authorization;
 using Celeste.Inventory.Api.Models.Manufacturers;
 using Celeste.Inventory.Application.Features.Commands;
@@ -5,8 +7,6 @@ using Celeste.Inventory.Application.Features.Queries;
 using Emit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-namespace Celeste.Inventory.Api.Controllers;
 
 /// <summary>
 ///     Exposes manufacturer management endpoints.

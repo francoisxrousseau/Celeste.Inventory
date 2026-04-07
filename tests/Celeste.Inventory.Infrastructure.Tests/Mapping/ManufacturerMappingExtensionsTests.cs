@@ -1,8 +1,8 @@
+namespace Celeste.Inventory.Infrastructure.Tests.Mapping;
+
 using Celeste.Inventory.Infrastructure.Documents;
 using Celeste.Inventory.Infrastructure.Mapping;
 using Xunit;
-
-namespace Celeste.Inventory.Infrastructure.Tests.Mapping;
 
 /// <summary>
 ///     Tests manufacturer infrastructure mapping behavior.

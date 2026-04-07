@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Api.Authorization;
+
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-
-namespace Celeste.Inventory.Api.Authorization;
 
 /// <summary>
 ///     Provides helpers for scope-based authorization policies.

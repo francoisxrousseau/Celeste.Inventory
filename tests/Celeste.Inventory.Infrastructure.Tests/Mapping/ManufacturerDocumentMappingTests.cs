@@ -1,8 +1,8 @@
+namespace Celeste.Inventory.Infrastructure.Tests.Mapping;
+
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Infrastructure.Mapping;
 using Xunit;
-
-namespace Celeste.Inventory.Infrastructure.Tests.Mapping;
 
 /// <summary>
 ///     Tests mapping from domain manufacturer entities to Mongo documents.

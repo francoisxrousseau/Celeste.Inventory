@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Api.OpenApi;
+
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
-
-namespace Celeste.Inventory.Api.OpenApi;
 
 /// <summary>
 ///     Adds bearer authentication metadata to the OpenAPI document.

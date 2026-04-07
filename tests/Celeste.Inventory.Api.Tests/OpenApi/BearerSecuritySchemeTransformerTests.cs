@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Api.Tests.OpenApi;
+
 using Celeste.Inventory.Api.OpenApi;
 using Microsoft.OpenApi;
-
-namespace Celeste.Inventory.Api.Tests.OpenApi;
 
 /// <summary>
 ///     Covers bearer security OpenAPI document transformation behavior.

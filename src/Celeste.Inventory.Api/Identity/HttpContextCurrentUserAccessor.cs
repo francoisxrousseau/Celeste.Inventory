@@ -1,8 +1,8 @@
+namespace Celeste.Inventory.Api.Identity;
+
 using Celeste.Inventory.Api.Options;
 using Celeste.Inventory.Core.Identity;
 using Microsoft.Extensions.Options;
-
-namespace Celeste.Inventory.Api.Identity;
 
 /// <summary>
 ///     Resolves the authenticated user from the current HTTP context.

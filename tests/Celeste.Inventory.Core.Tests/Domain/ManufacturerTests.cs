@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Core.Tests.Domain;
+
 using Celeste.Inventory.Core.Domain;
 using Xunit;
-
-namespace Celeste.Inventory.Core.Tests.Domain;
 
 /// <summary>
 ///     Tests the observable manufacturer domain shape.

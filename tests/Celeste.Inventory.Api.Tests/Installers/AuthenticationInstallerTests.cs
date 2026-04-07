@@ -1,6 +1,8 @@
+namespace Celeste.Inventory.Api.Tests.Installers;
+
 using Celeste.Inventory.Api.Installers;
 using Celeste.Inventory.Api.Authorization;
-using ApiAuthenticationOptions = Celeste.Inventory.Api.Options.AuthenticationOptions;
+using ApiAuthenticationOptions = Options.AuthenticationOptions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
@@ -8,8 +10,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-
-namespace Celeste.Inventory.Api.Tests.Installers;
 
 /// <summary>
 ///     Covers authentication service registration behavior.

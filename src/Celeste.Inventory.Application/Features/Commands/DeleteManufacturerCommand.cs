@@ -1,6 +1,6 @@
-using Emit.Mediator;
-
 namespace Celeste.Inventory.Application.Features.Commands;
+
+using Emit.Mediator;
 
 /// <summary>
 ///	Represents a request to soft delete a manufacturer.

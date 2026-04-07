@@ -1,11 +1,11 @@
+namespace Celeste.Inventory.Api.Installers;
+
 using Celeste.Inventory.Api.Authorization;
 using Celeste.Inventory.Api.Identity;
 using Celeste.Inventory.Api.Options;
 using Celeste.Inventory.Core.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-
-namespace Celeste.Inventory.Api.Installers;
 
 /// <summary>
 ///     Registers authentication and authorization services for the API.
