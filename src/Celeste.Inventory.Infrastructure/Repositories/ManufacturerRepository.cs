@@ -1,11 +1,11 @@
+namespace Celeste.Inventory.Infrastructure.Repositories;
+
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Repositories;
 using Celeste.Inventory.Infrastructure.Documents;
 using Celeste.Inventory.Infrastructure.Mapping;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
-
-namespace Celeste.Inventory.Infrastructure.Repositories;
 
 /// <summary>
 ///     Provides MongoDB persistence for manufacturers.

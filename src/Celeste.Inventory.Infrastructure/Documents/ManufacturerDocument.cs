@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Infrastructure.Documents;
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-
-namespace Celeste.Inventory.Infrastructure.Documents;
 
 /// <summary>
 ///     Represents the MongoDB manufacturer document.

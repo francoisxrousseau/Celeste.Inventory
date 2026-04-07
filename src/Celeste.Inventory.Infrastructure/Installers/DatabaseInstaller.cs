@@ -1,3 +1,5 @@
+namespace Celeste.Inventory.Infrastructure.Installers;
+
 using Celeste.Inventory.Core.Repositories;
 using Celeste.Inventory.Infrastructure.Options;
 using Celeste.Inventory.Infrastructure.Repositories;
@@ -5,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-
-namespace Celeste.Inventory.Infrastructure.Installers;
 
 /// <summary>
 ///     Registers infrastructure persistence services and database dependencies.
@@ -40,7 +40,7 @@ public static class DatabaseInstaller
             return new MongoClient(options.ConnectionString);
         });
 
-        services.AddScoped<IMongoDatabase>(serviceProvider =>
+        services.AddSingleton<IMongoDatabase>(serviceProvider =>
         {
             var options = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
             var client = serviceProvider.GetRequiredService<IMongoClient>();

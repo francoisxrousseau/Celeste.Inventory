@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Infrastructure.Mapping;
+
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Infrastructure.Documents;
-
-namespace Celeste.Inventory.Infrastructure.Mapping;
 
 /// <summary>
 ///     Provides mappings between manufacturer documents and domain entities.

@@ -1,11 +1,12 @@
+namespace Celeste.Inventory.Api.Controllers;
+
+using Celeste.Inventory.Api.Authorization;
 using Celeste.Inventory.Api.Models.Manufacturers;
 using Celeste.Inventory.Application.Features.Commands;
 using Celeste.Inventory.Application.Features.Queries;
-using Celeste.Inventory.Common.Responses;
 using Emit.Mediator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-namespace Celeste.Inventory.Api.Controllers;
 
 /// <summary>
 ///     Exposes manufacturer management endpoints.
@@ -14,6 +15,8 @@ namespace Celeste.Inventory.Api.Controllers;
 [Route("manufacturers")]
 public sealed class ManufacturersController(IMediator mediator) : ControllerBase
 {
+    private const string GetManufacturerByIdRouteName = "GetManufacturerById";
+
     /// <summary>
     ///     Creates a manufacturer by delegating to the application layer.
     /// </summary>
@@ -27,8 +30,11 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
     ///     The created manufacturer response.
     /// </returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.ManufacturerWrite)]
     [ProducesResponseType<ManufacturerResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ManufacturerResponse>> CreateAsync(
@@ -40,11 +46,11 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 request.Name,
                 request.ContactEmail,
                 request.ContactPhone,
-                User.Identity?.Name,
                 DateTime.UtcNow),
             cancellationToken);
+        var apiResponse = response.ToApiModel();
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = response.Id }, response);
+        return CreatedAtRoute(GetManufacturerByIdRouteName, new { id = apiResponse.Id }, apiResponse);
     }
 
     /// <summary>
@@ -62,8 +68,11 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
     /// <returns>
     ///     The manufacturer response.
     /// </returns>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = GetManufacturerByIdRouteName)]
+    [Authorize(Policy = AuthorizationPolicies.ManufacturerRead)]
     [ProducesResponseType<ManufacturerResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ManufacturerResponse>> GetByIdAsync(
@@ -75,7 +84,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
             new GetManufacturerByIdQuery(id, allowDeleted),
             cancellationToken);
 
-        return Ok(response);
+        return Ok(response.ToApiModel());
     }
 
     /// <summary>
@@ -91,9 +100,12 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
     ///     Either a paged manufacturer response or a count-only response.
     /// </returns>
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ManufacturerRead)]
     [ProducesResponseType<PagedManufacturersResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ManufacturerCountResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ListAsync(
         [FromQuery] ListManufacturersRequest request,
@@ -105,7 +117,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 new CountManufacturersQuery(request.SearchText, request.IncludeDeleted),
                 cancellationToken);
 
-            return Ok(count);
+            return Ok(count.ToApiModel());
         }
 
         var response = await mediator.SendAsync(
@@ -116,7 +128,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 request.IncludeDeleted),
             cancellationToken);
 
-        return Ok(response);
+        return Ok(response.ToApiModel());
     }
 
     /// <summary>
@@ -135,8 +147,11 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
     ///     The updated manufacturer response.
     /// </returns>
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = AuthorizationPolicies.ManufacturerWrite)]
     [ProducesResponseType<ManufacturerResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
@@ -151,11 +166,10 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 request.Name,
                 request.ContactEmail,
                 request.ContactPhone,
-                User.Identity?.Name,
                 DateTime.UtcNow),
             cancellationToken);
 
-        return Ok(response);
+        return Ok(response.ToApiModel());
     }
 
     /// <summary>
@@ -171,7 +185,10 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
     ///     A no-content response when the delete succeeds.
     /// </returns>
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = AuthorizationPolicies.ManufacturerWrite)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteAsync(
@@ -181,7 +198,6 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
         await mediator.SendAsync(
             new DeleteManufacturerCommand(
                 id,
-                User.Identity?.Name,
                 DateTime.UtcNow),
             cancellationToken);
 

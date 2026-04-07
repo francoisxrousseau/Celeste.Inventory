@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Application.Mapping;
+
 using Celeste.Inventory.Common.Responses;
 using Celeste.Inventory.Core.Domain;
-
-namespace Celeste.Inventory.Application.Mapping;
 
 /// <summary>
 ///	Provides mapping helpers for manufacturer responses.

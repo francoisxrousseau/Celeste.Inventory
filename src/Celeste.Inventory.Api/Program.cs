@@ -1,6 +1,7 @@
 using Celeste.Inventory.Api.ErrorHandling;
 using Celeste.Inventory.Api.Filters;
 using Celeste.Inventory.Api.Installers;
+using Celeste.Inventory.Api.OpenApi;
 using Celeste.Inventory.Api.Validators;
 using FluentValidation;
 
@@ -16,9 +17,13 @@ builder.Services.AddControllers(options =>
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateManufacturerRequestValidator>();
+builder.Services.AddAuthenticationAuthorization(builder.Configuration);
 builder.Services.AddManufacturerBootstrap(builder.Configuration);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
 
 var app = builder.Build();
 
@@ -26,11 +31,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Celeste Inventory API");
+        options.RoutePrefix = "swagger";
+    });
 }
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

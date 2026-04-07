@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Events;
+
 using Avro;
 using Avro.Specific;
-
-namespace Celeste.Inventory.Events;
 
 /// <summary>
 ///     Represents the manufacturer integration event payload.

@@ -1,7 +1,7 @@
+namespace Celeste.Inventory.Api.Validators;
+
 using Celeste.Inventory.Api.Models.Manufacturers;
 using FluentValidation;
-
-namespace Celeste.Inventory.Api.Validators;
 
 /// <summary>
 ///     Validates manufacturer creation requests received by the API.

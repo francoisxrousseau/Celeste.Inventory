@@ -1,17 +1,18 @@
+namespace Celeste.Inventory.Application.Features.Handlers;
+
 using Celeste.Inventory.Application.Features.Commands;
 using Celeste.Inventory.Application.Mapping;
 using Celeste.Inventory.Common.Responses;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Exceptions;
+using Celeste.Inventory.Core.Identity;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Mediator;
-
-namespace Celeste.Inventory.Application.Features.Handlers;
 
 /// <summary>
 ///	Handles manufacturer update requests.
 /// </summary>
-public sealed class UpdateManufacturerHandler(IManufacturerRepository repository)
+public sealed class UpdateManufacturerHandler(IManufacturerRepository repository, ICurrentUserAccessor currentUserAccessor)
     : IRequestHandler<UpdateManufacturerCommand, ManufacturerResponse>
 {
     /// <summary>
@@ -41,7 +42,7 @@ public sealed class UpdateManufacturerHandler(IManufacturerRepository repository
             trimmedName,
             request.ContactEmail,
             request.ContactPhone,
-            request.User,
+            currentUserAccessor.UserId,
             request.UpdatedAt,
             cancellationToken);
         if (manufacturer is null)

@@ -1,14 +1,15 @@
+namespace Celeste.Inventory.Application.Features.Handlers;
+
 using Celeste.Inventory.Application.Features.Commands;
 using Celeste.Inventory.Core.Exceptions;
+using Celeste.Inventory.Core.Identity;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Mediator;
-
-namespace Celeste.Inventory.Application.Features.Handlers;
 
 /// <summary>
 ///	Handles manufacturer delete requests.
 /// </summary>
-public sealed class DeleteManufacturerHandler(IManufacturerRepository repository)
+public sealed class DeleteManufacturerHandler(IManufacturerRepository repository, ICurrentUserAccessor currentUserAccessor)
     : IRequestHandler<DeleteManufacturerCommand>
 {
     /// <summary>
@@ -25,7 +26,7 @@ public sealed class DeleteManufacturerHandler(IManufacturerRepository repository
     /// </returns>
     public async Task HandleAsync(DeleteManufacturerCommand request, CancellationToken cancellationToken)
     {
-        var deleted = await repository.DeleteAsync(request.Id, request.User, request.DeletedAt, cancellationToken);
+        var deleted = await repository.DeleteAsync(request.Id, currentUserAccessor.UserId, request.DeletedAt, cancellationToken);
         if (!deleted)
         {
             throw new ManufacturerNotFoundException("Manufacturer was not found.");

@@ -1,9 +1,9 @@
+namespace Celeste.Inventory.Api.ErrorHandling;
+
 using Celeste.Inventory.Core.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-
-namespace Celeste.Inventory.Api.ErrorHandling;
 
 /// <summary>
 ///     Converts known application and domain exceptions into ProblemDetails responses.
