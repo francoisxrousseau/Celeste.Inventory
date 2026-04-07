@@ -40,7 +40,7 @@ public static class DatabaseInstaller
             return new MongoClient(options.ConnectionString);
         });
 
-        services.AddScoped<IMongoDatabase>(serviceProvider =>
+        services.AddSingleton<IMongoDatabase>(serviceProvider =>
         {
             var options = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
             var client = serviceProvider.GetRequiredService<IMongoClient>();

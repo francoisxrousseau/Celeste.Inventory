@@ -2,7 +2,6 @@ using Celeste.Inventory.Api.Authorization;
 using Celeste.Inventory.Api.Models.Manufacturers;
 using Celeste.Inventory.Application.Features.Commands;
 using Celeste.Inventory.Application.Features.Queries;
-using Celeste.Inventory.Common.Responses;
 using Emit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +46,9 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 request.ContactPhone,
                 DateTime.UtcNow),
             cancellationToken);
+        var apiResponse = response.ToApiModel();
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = response.Id }, response);
+        return CreatedAtAction(nameof(GetByIdAsync), new { id = apiResponse.Id }, apiResponse);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
             new GetManufacturerByIdQuery(id, allowDeleted),
             cancellationToken);
 
-        return Ok(response);
+        return Ok(response.ToApiModel());
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 new CountManufacturersQuery(request.SearchText, request.IncludeDeleted),
                 cancellationToken);
 
-            return Ok(count);
+            return Ok(count.ToApiModel());
         }
 
         var response = await mediator.SendAsync(
@@ -126,7 +126,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 request.IncludeDeleted),
             cancellationToken);
 
-        return Ok(response);
+        return Ok(response.ToApiModel());
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public sealed class ManufacturersController(IMediator mediator) : ControllerBase
                 DateTime.UtcNow),
             cancellationToken);
 
-        return Ok(response);
+        return Ok(response.ToApiModel());
     }
 
     /// <summary>

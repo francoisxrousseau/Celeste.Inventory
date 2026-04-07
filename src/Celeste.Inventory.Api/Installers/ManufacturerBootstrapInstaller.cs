@@ -83,7 +83,7 @@ public static class ManufacturerBootstrapInstaller
                     topic.SetKeyDeserializer(Deserializers.Utf8);
                     topic.SetAvroValueSerializer<string, ManufacturerEvent>();
                     topic.SetAvroValueDeserializer<string, ManufacturerEvent>();
-                    topic.Producer(_ => { });
+                    topic.Producer();
                 });
             });
         });

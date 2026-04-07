@@ -52,6 +52,19 @@ Api (Controller)
 - **Options pattern**: All configuration must be declared in a dedicated options file and grouped into a focused options class per concern. Resolve options exclusively via `IOptions<T>` (or `IOptionsSnapshot<T>` / `IOptionsMonitor<T>` where appropriate) — never bind config directly.
 - **`.claude/rules/`** may contain project-specific rules — check there for additional guidance.
 - **Async code**: Whenever possible, use async overload of methods, use CancellationToken with default value overload.
+- **Using directives**: When adding a `using` in a C# file, place it inside the namespace declaration, never outside it.
+- **Single-line `if` statements**: When an `if` contains only one statement, write it without braces and keep that statement as a single line immediately after the `if`.
+- **Conditional assignments**: When assigning a field or local value with an `if` / `else`, prefer a ternary expression instead of a multi-line conditional block.
+- **Multi-parameter constructors and methods**: When declaring a constructor or method with more than one parameter, put the opening parenthesis on the declaration line, then break to a new line and place exactly one parameter per line, with commas between parameters.
+  Use this style:
+  ```csharp
+  public Example(
+      IFoo foo,
+      IBar bar,
+      IBaz baz)
+  {
+  }
+  ```
 ## Deployment
 
 
