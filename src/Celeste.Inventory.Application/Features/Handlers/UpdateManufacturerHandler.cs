@@ -6,13 +6,19 @@ using Celeste.Inventory.Common.Responses;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Exceptions;
 using Celeste.Inventory.Core.Identity;
+using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
+using Emit.Abstractions;
 using Emit.Mediator;
 
 /// <summary>
 ///	Handles manufacturer update requests.
 /// </summary>
-public sealed class UpdateManufacturerHandler(IManufacturerRepository repository, ICurrentUserAccessor currentUserAccessor)
+public sealed class UpdateManufacturerHandler(
+    IManufacturerRepository repository,
+    ICurrentUserAccessor currentUserAccessor,
+    IManufacturerEventPublisher eventPublisher,
+    IUnitOfWork unitOfWork)
     : IRequestHandler<UpdateManufacturerCommand, ManufacturerResponse>
 {
     /// <summary>
@@ -37,6 +43,7 @@ public sealed class UpdateManufacturerHandler(IManufacturerRepository repository
             throw new DuplicateManufacturerNameException("A manufacturer with the same name already exists.");
         }
 
+        await using var transaction = await unitOfWork.BeginAsync(cancellationToken);
         var manufacturer = await repository.UpdateAsync(
             request.Id,
             trimmedName,
@@ -49,6 +56,9 @@ public sealed class UpdateManufacturerHandler(IManufacturerRepository repository
         {
             throw new ManufacturerNotFoundException("Manufacturer was not found.");
         }
+
+        await eventPublisher.PublishUpdatedAsync(manufacturer, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return manufacturer.ToResponse();
     }

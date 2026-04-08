@@ -6,7 +6,9 @@ using Celeste.Inventory.Application.Features.Queries;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Exceptions;
 using Celeste.Inventory.Core.Identity;
+using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
+using Emit.Abstractions;
 using Xunit;
 
 /// <summary>
@@ -18,8 +20,10 @@ public sealed class ManufacturerHandlersTests
     public async Task CreateHandler_WithUniqueName_CreatesTrimmedManufacturer()
     {
         var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
         var currentUser = new FakeCurrentUserAccessor { UserId = "alice" };
-        var handler = new CreateManufacturerHandler(repository, currentUser);
+        var handler = new CreateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
 
         var response = await handler.HandleAsync(
             new CreateManufacturerCommand("  Celeste Labs  ", "contact@celeste.test", "4165551234", Utc(2026, 4, 3, 12, 0)),
@@ -32,12 +36,17 @@ public sealed class ManufacturerHandlersTests
         Assert.Single(repository.Items);
         Assert.Equal("Celeste Labs", repository.Items[0].Name);
         Assert.Equal("alice", repository.Items[0].CreatedBy);
+        Assert.Equal(1, publisher.CreatedEvents.Count);
+        Assert.Equal(1, unitOfWork.BeginCalls);
+        Assert.Equal(1, unitOfWork.CommitCalls);
     }
 
     [Fact]
     public async Task CreateHandler_WithDuplicateName_ThrowsDuplicateManufacturerNameException()
     {
         var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
         repository.Items.Add(new Manufacturer
         {
             Id = Guid.NewGuid(),
@@ -46,7 +55,7 @@ public sealed class ManufacturerHandlersTests
         });
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "alice" };
-        var handler = new CreateManufacturerHandler(repository, currentUser);
+        var handler = new CreateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
 
         var action = () => handler.HandleAsync(
             new CreateManufacturerCommand("  celeste labs  ", null, null, Utc(2026, 4, 3, 12, 0)),
@@ -54,6 +63,8 @@ public sealed class ManufacturerHandlersTests
 
         await Assert.ThrowsAsync<DuplicateManufacturerNameException>(action);
         Assert.Single(repository.Items);
+        Assert.Equal(0, publisher.TotalPublished);
+        Assert.Equal(0, unitOfWork.BeginCalls);
     }
 
     [Fact]
@@ -70,10 +81,12 @@ public sealed class ManufacturerHandlersTests
         };
 
         var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
         repository.Items.Add(manufacturer);
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
-        var handler = new UpdateManufacturerHandler(repository, currentUser);
+        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
 
         var response = await handler.HandleAsync(
             new UpdateManufacturerCommand(manufacturer.Id, "  New Name  ", "new@celeste.test", "6475559999", Utc(2026, 4, 3, 9, 30)),
@@ -86,22 +99,66 @@ public sealed class ManufacturerHandlersTests
         Assert.Equal("bob", manufacturer.LastUpdatedBy);
         Assert.Equal(Utc(2026, 4, 3, 9, 30), manufacturer.LastUpdatedAt);
         Assert.Equal("alice", manufacturer.CreatedBy);
+        Assert.Equal(1, publisher.UpdatedEvents.Count);
+        Assert.Equal(1, unitOfWork.BeginCalls);
+        Assert.Equal(1, unitOfWork.CommitCalls);
         Assert.Equal(1, repository.AtomicUpdateCalls);
         Assert.Equal(0, repository.GetByIdCalls);
+    }
+
+    [Fact]
+    public async Task UpdateHandler_WithDuplicateName_ThrowsDuplicateManufacturerNameException()
+    {
+        var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
+        repository.Items.AddRange(
+        [
+            new Manufacturer
+            {
+                Id = Guid.NewGuid(),
+                Name = "Northwind",
+                CreatedAt = Utc(2026, 4, 1, 8, 0),
+            },
+            new Manufacturer
+            {
+                Id = Guid.NewGuid(),
+                Name = "Celeste Labs",
+                CreatedAt = Utc(2026, 4, 1, 8, 0),
+            },
+        ]);
+
+        var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
+        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+
+        var action = () => handler.HandleAsync(
+            new UpdateManufacturerCommand(repository.Items[0].Id, "  celeste labs  ", null, null, Utc(2026, 4, 3, 9, 30)),
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<DuplicateManufacturerNameException>(action);
+        Assert.Equal(0, publisher.TotalPublished);
+        Assert.Equal(0, unitOfWork.BeginCalls);
+        Assert.Equal(0, unitOfWork.CommitCalls);
+        Assert.Equal(0, repository.AtomicUpdateCalls);
     }
 
     [Fact]
     public async Task UpdateHandler_WhenManufacturerMissing_ThrowsManufacturerNotFoundException()
     {
         var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
         var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
-        var handler = new UpdateManufacturerHandler(repository, currentUser);
+        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
 
         var action = () => handler.HandleAsync(
             new UpdateManufacturerCommand(Guid.NewGuid(), "Celeste Labs", null, null, Utc(2026, 4, 3, 9, 30)),
             CancellationToken.None);
 
         await Assert.ThrowsAsync<ManufacturerNotFoundException>(action);
+        Assert.Equal(0, publisher.TotalPublished);
+        Assert.Equal(1, unitOfWork.BeginCalls);
+        Assert.Equal(0, unitOfWork.CommitCalls);
     }
 
     [Fact]
@@ -115,10 +172,12 @@ public sealed class ManufacturerHandlersTests
         };
 
         var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
         repository.Items.Add(manufacturer);
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "charlie" };
-        var handler = new DeleteManufacturerHandler(repository, currentUser);
+        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork);
 
         await handler.HandleAsync(
             new DeleteManufacturerCommand(manufacturer.Id, Utc(2026, 4, 4, 10, 15)),
@@ -127,6 +186,30 @@ public sealed class ManufacturerHandlersTests
         Assert.Equal("charlie", manufacturer.DeletedBy);
         Assert.Equal(Utc(2026, 4, 4, 10, 15), manufacturer.DeletedAt);
         Assert.True(manufacturer.IsDeleted);
+        Assert.Equal(1, publisher.DeletedEvents.Count);
+        Assert.Equal(1, unitOfWork.BeginCalls);
+        Assert.Equal(1, unitOfWork.CommitCalls);
+        Assert.Equal(1, repository.AtomicDeleteCalls);
+        Assert.Equal(0, repository.GetByIdCalls);
+    }
+
+    [Fact]
+    public async Task DeleteHandler_WhenManufacturerMissing_ThrowsManufacturerNotFoundException()
+    {
+        var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
+        var currentUser = new FakeCurrentUserAccessor { UserId = "dana" };
+        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+
+        var action = () => handler.HandleAsync(
+            new DeleteManufacturerCommand(Guid.NewGuid(), Utc(2026, 4, 5, 11, 45)),
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<ManufacturerNotFoundException>(action);
+        Assert.Equal(0, publisher.TotalPublished);
+        Assert.Equal(1, unitOfWork.BeginCalls);
+        Assert.Equal(0, unitOfWork.CommitCalls);
         Assert.Equal(1, repository.AtomicDeleteCalls);
         Assert.Equal(0, repository.GetByIdCalls);
     }
@@ -144,18 +227,23 @@ public sealed class ManufacturerHandlersTests
         };
 
         var repository = new FakeManufacturerRepository();
+        var publisher = new FakeManufacturerEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
         repository.Items.Add(manufacturer);
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "dana" };
-        var handler = new DeleteManufacturerHandler(repository, currentUser);
+        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork);
 
         var action = () => handler.HandleAsync(
             new DeleteManufacturerCommand(manufacturer.Id, Utc(2026, 4, 5, 11, 45)),
             CancellationToken.None);
 
         await Assert.ThrowsAsync<ManufacturerNotFoundException>(action);
+        Assert.Equal(0, publisher.TotalPublished);
         Assert.Equal("charlie", manufacturer.DeletedBy);
         Assert.Equal(Utc(2026, 4, 4, 10, 15), manufacturer.DeletedAt);
+        Assert.Equal(1, unitOfWork.BeginCalls);
+        Assert.Equal(0, unitOfWork.CommitCalls);
         Assert.Equal(1, repository.AtomicDeleteCalls);
         Assert.Equal(0, repository.GetByIdCalls);
     }
@@ -339,18 +427,18 @@ public sealed class ManufacturerHandlersTests
             return Task.FromResult<Manufacturer?>(item);
         }
 
-        public Task<bool> DeleteAsync(Guid id, string? deletedBy, DateTime deletedAt, CancellationToken cancellationToken = default)
+        public Task<Manufacturer?> DeleteAsync(Guid id, string? deletedBy, DateTime deletedAt, CancellationToken cancellationToken = default)
         {
             AtomicDeleteCalls++;
             var item = Items.SingleOrDefault(x => x.Id == id && !x.IsDeleted);
             if (item is null)
             {
-                return Task.FromResult(false);
+                return Task.FromResult<Manufacturer?>(null);
             }
 
             item.DeletedBy = deletedBy;
             item.DeletedAt = deletedAt;
-            return Task.FromResult(true);
+            return Task.FromResult<Manufacturer?>(item);
         }
 
         private IEnumerable<Manufacturer> ApplyFilter(string? searchText, bool includeDeleted)
@@ -362,6 +450,80 @@ public sealed class ManufacturerHandlersTests
         private static string Normalize(string value)
         {
             return value.Trim().ToUpperInvariant();
+        }
+    }
+
+    private sealed class FakeManufacturerEventPublisher : IManufacturerEventPublisher
+    {
+        public List<Manufacturer> CreatedEvents { get; } = [];
+
+        public List<Manufacturer> UpdatedEvents { get; } = [];
+
+        public List<(Manufacturer Manufacturer, string? DeletedBy, DateTime DeletedAt)> DeletedEvents { get; } = [];
+
+        public int TotalPublished => CreatedEvents.Count + UpdatedEvents.Count + DeletedEvents.Count;
+
+        public Task PublishCreatedAsync(Manufacturer manufacturer, CancellationToken cancellationToken = default)
+        {
+            CreatedEvents.Add(manufacturer);
+            return Task.CompletedTask;
+        }
+
+        public Task PublishUpdatedAsync(Manufacturer manufacturer, CancellationToken cancellationToken = default)
+        {
+            UpdatedEvents.Add(manufacturer);
+            return Task.CompletedTask;
+        }
+
+        public Task PublishDeletedAsync(
+            Manufacturer manufacturer,
+            string? deletedBy,
+            DateTime deletedAt,
+            CancellationToken cancellationToken = default)
+        {
+            DeletedEvents.Add((manufacturer, deletedBy, deletedAt));
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class FakeUnitOfWork : IUnitOfWork
+    {
+        public int BeginCalls { get; private set; }
+
+        public int CommitCalls { get; private set; }
+
+        public ValueTask<IUnitOfWorkTransaction> BeginAsync(CancellationToken cancellationToken = default)
+        {
+            BeginCalls++;
+            return ValueTask.FromResult<IUnitOfWorkTransaction>(new FakeUnitOfWorkTransaction(this));
+        }
+
+        private sealed class FakeUnitOfWorkTransaction(FakeUnitOfWork owner) : IUnitOfWorkTransaction
+        {
+            public bool IsCommitted { get; private set; }
+
+            public bool IsRolledBack { get; private set; }
+
+            public Task CommitAsync(CancellationToken cancellationToken = default)
+            {
+                IsCommitted = true;
+                owner.CommitCalls++;
+                return Task.CompletedTask;
+            }
+
+            public Task RollbackAsync(CancellationToken cancellationToken = default)
+            {
+                IsRolledBack = true;
+                return Task.CompletedTask;
+            }
+
+            public ValueTask DisposeAsync()
+            {
+                if (!IsCommitted)
+                    IsRolledBack = true;
+
+                return ValueTask.CompletedTask;
+            }
         }
     }
 

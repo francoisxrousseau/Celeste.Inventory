@@ -72,7 +72,7 @@ public interface IManufacturerRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Atomically soft deletes a manufacturer.
+    ///     Atomically soft deletes a manufacturer and returns the deleted entity.
     /// </summary>
     /// <param name="id">
     ///     The manufacturer identifier.
@@ -87,9 +87,9 @@ public interface IManufacturerRepository
     ///     The cancellation token for the asynchronous operation.
     /// </param>
     /// <returns>
-    ///     <see langword="true"/> when a manufacturer was deleted; otherwise, <see langword="false"/>.
+    ///     The deleted manufacturer, or <see langword="null"/> when no active manufacturer matches.
     /// </returns>
-    Task<bool> DeleteAsync(
+    Task<Manufacturer?> DeleteAsync(
         Guid id,
         string? deletedBy,
         DateTime deletedAt,

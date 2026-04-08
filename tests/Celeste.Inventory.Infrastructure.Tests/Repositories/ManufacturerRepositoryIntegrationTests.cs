@@ -3,6 +3,7 @@ namespace Celeste.Inventory.Infrastructure.Tests.Repositories;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Infrastructure.Documents;
 using Celeste.Inventory.Infrastructure.Repositories;
+using Emit.MongoDB;
 using Mongo2Go;
 using MongoDB.Driver;
 using Xunit;
@@ -15,6 +16,7 @@ public sealed class ManufacturerRepositoryIntegrationTests : IDisposable
     private readonly MongoDbRunner _runner;
     private readonly IMongoDatabase _database;
     private readonly IMongoCollection<ManufacturerDocument> _collection;
+    private readonly IClientSessionHandle _session;
     private readonly ManufacturerRepository _repository;
 
     /// <summary>
@@ -26,7 +28,8 @@ public sealed class ManufacturerRepositoryIntegrationTests : IDisposable
         var client = new MongoClient(_runner.ConnectionString);
         _database = client.GetDatabase($"manufacturer-tests-{Guid.NewGuid():N}");
         _collection = _database.GetCollection<ManufacturerDocument>("manufacturers");
-        _repository = new ManufacturerRepository(_database);
+        _session = client.StartSession();
+        _repository = new ManufacturerRepository(_database, new FakeMongoSessionAccessor(_session));
     }
 
     [Fact]
@@ -41,6 +44,17 @@ public sealed class ManufacturerRepositoryIntegrationTests : IDisposable
         Assert.Equal(manufacturer.Id, result.Id);
         Assert.Equal("Celeste Labs", result.Name);
         Assert.Equal("CELESTE LABS", (await LoadDocumentAsync(manufacturer.Id)).NormalizedName);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WithoutActiveSession_ThrowsInvalidOperationException()
+    {
+        var repository = new ManufacturerRepository(_database, new FakeMongoSessionAccessor(null));
+        var manufacturer = CreateManufacturer("Celeste Labs", "alice", Utc(2026, 4, 1, 8, 0));
+
+        var action = () => repository.CreateAsync(manufacturer, CancellationToken.None);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(action);
     }
 
     [Fact]
@@ -122,10 +136,21 @@ public sealed class ManufacturerRepositoryIntegrationTests : IDisposable
         var second = await _repository.DeleteAsync(manufacturer.Id, "charlie", Utc(2026, 4, 3, 10, 15), CancellationToken.None);
         var document = await LoadDocumentAsync(manufacturer.Id);
 
-        Assert.True(first);
-        Assert.False(second);
+        Assert.NotNull(first);
+        Assert.Null(second);
+        Assert.True(first.IsDeleted);
         Assert.Equal("bob", document.DeletedBy);
         Assert.Equal(Utc(2026, 4, 2, 9, 30), document.DeletedAt);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WithoutActiveSession_ThrowsInvalidOperationException()
+    {
+        var repository = new ManufacturerRepository(_database, new FakeMongoSessionAccessor(null));
+
+        var action = () => repository.DeleteAsync(Guid.NewGuid(), "bob", Utc(2026, 4, 2, 9, 30), CancellationToken.None);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(action);
     }
 
     [Fact]
@@ -190,8 +215,37 @@ public sealed class ManufacturerRepositoryIntegrationTests : IDisposable
         Assert.Null(updated);
     }
 
+    [Fact]
+    public async Task UpdateAsync_WithEntity_WithoutActiveSession_ThrowsInvalidOperationException()
+    {
+        var repository = new ManufacturerRepository(_database, new FakeMongoSessionAccessor(null));
+        var manufacturer = CreateManufacturer("Celeste Labs", "alice", Utc(2026, 4, 1, 8, 0));
+
+        var action = () => repository.UpdateAsync(manufacturer, CancellationToken.None);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(action);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithFields_WithoutActiveSession_ThrowsInvalidOperationException()
+    {
+        var repository = new ManufacturerRepository(_database, new FakeMongoSessionAccessor(null));
+
+        var action = () => repository.UpdateAsync(
+            Guid.NewGuid(),
+            "Celeste Research",
+            "research@celeste.test",
+            "6475559999",
+            "bob",
+            Utc(2026, 4, 2, 9, 30),
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(action);
+    }
+
     public void Dispose()
     {
+        _session.Dispose();
         _runner.Dispose();
     }
 
@@ -223,5 +277,10 @@ public sealed class ManufacturerRepositoryIntegrationTests : IDisposable
     private static DateTime Utc(int year, int month, int day, int hour, int minute)
     {
         return new DateTime(year, month, day, hour, minute, 0, DateTimeKind.Utc);
+    }
+
+    private sealed class FakeMongoSessionAccessor(IClientSessionHandle? session) : IMongoSessionAccessor
+    {
+        public IClientSessionHandle? Session { get; } = session;
     }
 }
