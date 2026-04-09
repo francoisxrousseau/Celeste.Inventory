@@ -10,6 +10,7 @@ using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Abstractions;
 using Emit.Mediator;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 ///	Handles manufacturer update requests.
@@ -18,7 +19,8 @@ public sealed class UpdateManufacturerHandler(
     IManufacturerRepository repository,
     ICurrentUserAccessor currentUserAccessor,
     IManufacturerEventPublisher eventPublisher,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILogger<UpdateManufacturerHandler> logger)
     : IRequestHandler<UpdateManufacturerCommand, ManufacturerResponse>
 {
     /// <summary>
@@ -59,6 +61,8 @@ public sealed class UpdateManufacturerHandler(
 
         await eventPublisher.PublishUpdatedAsync(manufacturer, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+
+        logger.LogInformation("Updated manufacturer with ID {ManufacturerId}.", manufacturer.Id);
 
         return manufacturer.ToResponse();
     }

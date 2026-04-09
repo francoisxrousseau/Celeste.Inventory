@@ -39,7 +39,9 @@ public static class DatabaseInstaller
         services.AddSingleton<IMongoClient>(serviceProvider =>
         {
             var options = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
-            return new MongoClient(options.ConnectionString);
+            var settings = MongoClientSettings.FromConnectionString(options.ConnectionString);
+            settings.ApplicationName = AppDomain.CurrentDomain.FriendlyName;
+            return new MongoClient(settings);
         });
 
         services.AddSingleton<IMongoDatabase>(serviceProvider =>

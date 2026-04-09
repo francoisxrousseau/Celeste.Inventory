@@ -18,6 +18,7 @@ builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateManufacturerRequestValidator>();
 builder.Services.AddAuthenticationAuthorization(builder.Configuration);
+builder.Services.AddObservability(builder.Configuration, builder.Environment);
 builder.Services.AddManufacturerBootstrap(builder.Configuration);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
@@ -40,6 +41,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseObservability();
 
 app.UseAuthentication();
 app.UseAuthorization();

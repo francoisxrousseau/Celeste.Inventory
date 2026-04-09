@@ -10,6 +10,7 @@ using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Abstractions;
 using Emit.Mediator;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 ///	Handles manufacturer creation requests.
@@ -18,7 +19,8 @@ public sealed class CreateManufacturerHandler(
     IManufacturerRepository repository,
     ICurrentUserAccessor currentUserAccessor,
     IManufacturerEventPublisher eventPublisher,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILogger<CreateManufacturerHandler> logger)
     : IRequestHandler<CreateManufacturerCommand, ManufacturerResponse>
 {
     /// <summary>
@@ -56,6 +58,8 @@ public sealed class CreateManufacturerHandler(
         await repository.CreateAsync(manufacturer, cancellationToken);
         await eventPublisher.PublishCreatedAsync(manufacturer, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+
+        logger.LogInformation("Created manufacturer with ID {ManufacturerId}.", manufacturer.Id);
 
         return manufacturer.ToResponse();
     }

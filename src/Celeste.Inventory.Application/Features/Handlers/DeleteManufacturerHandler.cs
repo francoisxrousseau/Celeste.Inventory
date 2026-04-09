@@ -7,6 +7,7 @@ using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Abstractions;
 using Emit.Mediator;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 ///	Handles manufacturer delete requests.
@@ -15,7 +16,8 @@ public sealed class DeleteManufacturerHandler(
     IManufacturerRepository repository,
     ICurrentUserAccessor currentUserAccessor,
     IManufacturerEventPublisher eventPublisher,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILogger<DeleteManufacturerHandler> logger)
     : IRequestHandler<DeleteManufacturerCommand>
 {
     /// <summary>
@@ -45,5 +47,7 @@ public sealed class DeleteManufacturerHandler(
             request.DeletedAt,
             cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+
+        logger.LogInformation("Deleted manufacturer with ID {ManufacturerId}.", manufacturer.Id);
     }
 }
