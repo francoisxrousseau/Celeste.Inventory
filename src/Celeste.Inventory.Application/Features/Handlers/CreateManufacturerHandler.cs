@@ -6,13 +6,19 @@ using Celeste.Inventory.Common.Responses;
 using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Exceptions;
 using Celeste.Inventory.Core.Identity;
+using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
+using Emit.Abstractions;
 using Emit.Mediator;
 
 /// <summary>
 ///	Handles manufacturer creation requests.
 /// </summary>
-public sealed class CreateManufacturerHandler(IManufacturerRepository repository, ICurrentUserAccessor currentUserAccessor)
+public sealed class CreateManufacturerHandler(
+    IManufacturerRepository repository,
+    ICurrentUserAccessor currentUserAccessor,
+    IManufacturerEventPublisher eventPublisher,
+    IUnitOfWork unitOfWork)
     : IRequestHandler<CreateManufacturerCommand, ManufacturerResponse>
 {
     /// <summary>
@@ -34,9 +40,7 @@ public sealed class CreateManufacturerHandler(IManufacturerRepository repository
         var trimmedName = request.Name.Trim();
 
         if (await repository.ExistsByNameAsync(normalizedName, cancellationToken: cancellationToken))
-        {
             throw new DuplicateManufacturerNameException("A manufacturer with the same name already exists.");
-        }
 
         var manufacturer = new Manufacturer
         {
@@ -48,7 +52,11 @@ public sealed class CreateManufacturerHandler(IManufacturerRepository repository
             CreatedAt = request.CreatedAt,
         };
 
+        await using var transaction = await unitOfWork.BeginAsync(cancellationToken);
         await repository.CreateAsync(manufacturer, cancellationToken);
+        await eventPublisher.PublishCreatedAsync(manufacturer, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+
         return manufacturer.ToResponse();
     }
 }

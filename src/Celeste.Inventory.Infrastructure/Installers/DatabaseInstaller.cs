@@ -1,7 +1,9 @@
 namespace Celeste.Inventory.Infrastructure.Installers;
 
+using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
 using Celeste.Inventory.Infrastructure.Options;
+using Celeste.Inventory.Infrastructure.Messaging;
 using Celeste.Inventory.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,6 +50,7 @@ public static class DatabaseInstaller
         });
 
         services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
+        services.AddScoped<IManufacturerEventPublisher, ManufacturerEventPublisher>();
 
         return services;
     }
