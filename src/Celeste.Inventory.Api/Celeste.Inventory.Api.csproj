@@ -14,6 +14,7 @@
     <PackageReference Include="Emit.Kafka.JsonSerializer" Version="1.0.0-alpha.8" />
     <PackageReference Include="Emit.Mediator" Version="1.0.0-alpha.8" />
     <PackageReference Include="Emit.MongoDB" Version="1.0.0-alpha.8" />
+    <PackageReference Include="Emit.MongoDB.HealthChecks" Version="1.0.0-alpha.8" />
     <PackageReference Include="Emit.OpenTelemetry" Version="1.0.0-alpha.8" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />

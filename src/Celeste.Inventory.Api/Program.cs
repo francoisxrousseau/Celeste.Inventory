@@ -19,6 +19,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateManufacturerRequestValidator>();
 builder.Services.AddAuthenticationAuthorization(builder.Configuration);
 builder.Services.AddObservability(builder.Configuration, builder.Environment);
+builder.Services.AddApiHealthChecks();
 builder.Services.AddManufacturerBootstrap(builder.Configuration);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
@@ -46,6 +47,7 @@ app.UseObservability();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapApiHealthChecks();
 app.MapControllers();
 
 app.Run();
