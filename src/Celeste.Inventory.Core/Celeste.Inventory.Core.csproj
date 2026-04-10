@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Celeste.Inventory.Common\Celeste.Inventory.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Domain\" />
     <Folder Include="Repositories\" />
     <Folder Include="Options\" />

@@ -38,6 +38,12 @@ public sealed class ApiExceptionHandler : IExceptionHandler
                 Title = "Not Found",
                 Detail = notFoundException.Message,
             },
+            ProductNotFoundException notFoundException => new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Not Found",
+                Detail = notFoundException.Message,
+            },
             DuplicateManufacturerNameException duplicateException => new ProblemDetails
             {
                 Status = StatusCodes.Status409Conflict,

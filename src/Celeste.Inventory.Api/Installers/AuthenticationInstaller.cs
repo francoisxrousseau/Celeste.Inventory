@@ -68,6 +68,14 @@ public static class AuthenticationInstaller
             options.AddPolicy(
                 AuthorizationPolicies.ManufacturerWrite,
                 policy => policy.RequireAuthenticatedUser().RequireScope("manufacturer.write"));
+
+            options.AddPolicy(
+                AuthorizationPolicies.ProductRead,
+                policy => policy.RequireAuthenticatedUser().RequireScope("product.read"));
+
+            options.AddPolicy(
+                AuthorizationPolicies.ProductWrite,
+                policy => policy.RequireAuthenticatedUser().RequireScope("product.write"));
         });
 
         return services;

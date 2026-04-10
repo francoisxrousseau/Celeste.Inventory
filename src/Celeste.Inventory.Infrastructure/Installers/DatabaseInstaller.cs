@@ -53,6 +53,8 @@ public static class DatabaseInstaller
 
         services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
         services.AddScoped<IManufacturerEventPublisher, ManufacturerEventPublisher>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IProductEventPublisher, ProductEventPublisher>();
 
         return services;
     }

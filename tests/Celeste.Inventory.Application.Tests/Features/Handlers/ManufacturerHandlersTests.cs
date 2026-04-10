@@ -9,6 +9,7 @@ using Celeste.Inventory.Core.Identity;
 using Celeste.Inventory.Core.Messaging;
 using Celeste.Inventory.Core.Repositories;
 using Emit.Abstractions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 /// <summary>
@@ -23,7 +24,7 @@ public sealed class ManufacturerHandlersTests
         var publisher = new FakeManufacturerEventPublisher();
         var unitOfWork = new FakeUnitOfWork();
         var currentUser = new FakeCurrentUserAccessor { UserId = "alice" };
-        var handler = new CreateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new CreateManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<CreateManufacturerHandler>.Instance);
 
         var response = await handler.HandleAsync(
             new CreateManufacturerCommand("  Celeste Labs  ", "contact@celeste.test", "4165551234", Utc(2026, 4, 3, 12, 0)),
@@ -55,7 +56,7 @@ public sealed class ManufacturerHandlersTests
         });
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "alice" };
-        var handler = new CreateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new CreateManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<CreateManufacturerHandler>.Instance);
 
         var action = () => handler.HandleAsync(
             new CreateManufacturerCommand("  celeste labs  ", null, null, Utc(2026, 4, 3, 12, 0)),
@@ -86,7 +87,7 @@ public sealed class ManufacturerHandlersTests
         repository.Items.Add(manufacturer);
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
-        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<UpdateManufacturerHandler>.Instance);
 
         var response = await handler.HandleAsync(
             new UpdateManufacturerCommand(manufacturer.Id, "  New Name  ", "new@celeste.test", "6475559999", Utc(2026, 4, 3, 9, 30)),
@@ -129,7 +130,7 @@ public sealed class ManufacturerHandlersTests
         ]);
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
-        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<UpdateManufacturerHandler>.Instance);
 
         var action = () => handler.HandleAsync(
             new UpdateManufacturerCommand(repository.Items[0].Id, "  celeste labs  ", null, null, Utc(2026, 4, 3, 9, 30)),
@@ -149,7 +150,7 @@ public sealed class ManufacturerHandlersTests
         var publisher = new FakeManufacturerEventPublisher();
         var unitOfWork = new FakeUnitOfWork();
         var currentUser = new FakeCurrentUserAccessor { UserId = "bob" };
-        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new UpdateManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<UpdateManufacturerHandler>.Instance);
 
         var action = () => handler.HandleAsync(
             new UpdateManufacturerCommand(Guid.NewGuid(), "Celeste Labs", null, null, Utc(2026, 4, 3, 9, 30)),
@@ -177,7 +178,7 @@ public sealed class ManufacturerHandlersTests
         repository.Items.Add(manufacturer);
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "charlie" };
-        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<DeleteManufacturerHandler>.Instance);
 
         await handler.HandleAsync(
             new DeleteManufacturerCommand(manufacturer.Id, Utc(2026, 4, 4, 10, 15)),
@@ -200,7 +201,7 @@ public sealed class ManufacturerHandlersTests
         var publisher = new FakeManufacturerEventPublisher();
         var unitOfWork = new FakeUnitOfWork();
         var currentUser = new FakeCurrentUserAccessor { UserId = "dana" };
-        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<DeleteManufacturerHandler>.Instance);
 
         var action = () => handler.HandleAsync(
             new DeleteManufacturerCommand(Guid.NewGuid(), Utc(2026, 4, 5, 11, 45)),
@@ -232,7 +233,7 @@ public sealed class ManufacturerHandlersTests
         repository.Items.Add(manufacturer);
 
         var currentUser = new FakeCurrentUserAccessor { UserId = "dana" };
-        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork);
+        var handler = new DeleteManufacturerHandler(repository, currentUser, publisher, unitOfWork, NullLogger<DeleteManufacturerHandler>.Instance);
 
         var action = () => handler.HandleAsync(
             new DeleteManufacturerCommand(manufacturer.Id, Utc(2026, 4, 5, 11, 45)),
