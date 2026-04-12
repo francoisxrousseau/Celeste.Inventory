@@ -20,6 +20,9 @@ using Celeste.Inventory.Common.Enums;
 /// <param name="Status">
 ///     The product status.
 /// </param>
+/// <param name="Category">
+///     The product category.
+/// </param>
 /// <param name="Tags">
 ///     The optional product tags.
 /// </param>
@@ -29,4 +32,5 @@ public sealed record ProductResponse(
     string Name,
     string? Description,
     ProductStatus Status,
+    ProductCategory Category,
     IReadOnlyList<string>? Tags);

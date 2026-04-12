@@ -22,6 +22,7 @@
       "default": null
     },
     { "name": "Status", "type": [ "null", "string" ], "default": null },
+    { "name": "Category", "type": [ "null", "string" ], "default": null },
     { "name": "Tags", "type": [ "null", { "type": "array", "items": "string" } ], "default": null },
     { "name": "Date", "type": { "type": "long", "logicalType": "timestamp-millis" } },
     { "name": "User", "type": "string" }

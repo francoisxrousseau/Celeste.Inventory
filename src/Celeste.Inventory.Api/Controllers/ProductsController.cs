@@ -46,6 +46,7 @@ public sealed class ProductsController(IMediator mediator) : ControllerBase
                 request.Name,
                 request.Description,
                 request.Status,
+                request.Category,
                 request.Tags,
                 DateTime.UtcNow),
             cancellationToken);
@@ -167,6 +168,7 @@ public sealed class ProductsController(IMediator mediator) : ControllerBase
                 request.Name,
                 request.Description,
                 request.Status,
+                request.Category,
                 request.Tags,
                 DateTime.UtcNow),
             cancellationToken);

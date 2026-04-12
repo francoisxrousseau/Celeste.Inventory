@@ -54,6 +54,9 @@ public interface IProductRepository
     /// <param name="status">
     ///     The updated product status.
     /// </param>
+    /// <param name="category">
+    ///     The updated product category.
+    /// </param>
     /// <param name="tags">
     ///     The updated optional tags.
     /// </param>
@@ -75,6 +78,7 @@ public interface IProductRepository
         string name,
         string? description,
         ProductStatus status,
+        ProductCategory category,
         IReadOnlyList<string>? tags,
         string? updatedBy,
         DateTime updatedAt,

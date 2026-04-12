@@ -46,6 +46,7 @@ public sealed class CreateProductHandler(
             Name = request.Name.Trim(),
             Description = request.Description?.Trim(),
             Status = request.Status,
+            Category = request.Category,
             Tags = request.Tags,
             CreatedBy = currentUserAccessor.UserId,
             CreatedAt = request.CreatedAt,

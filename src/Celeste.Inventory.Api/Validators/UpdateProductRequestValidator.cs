@@ -19,6 +19,10 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
         RuleFor(x => x.Name)
             .NotEmpty();
 
+        RuleFor(x => x.Category)
+            .IsInEnum()
+            .NotEqual((Common.Enums.ProductCategory)0);
+
         RuleForEach(x => x.Tags)
             .NotEmpty();
     }

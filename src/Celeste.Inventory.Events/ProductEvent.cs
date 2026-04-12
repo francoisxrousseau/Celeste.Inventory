@@ -26,6 +26,7 @@ public sealed class ProductEvent : ISpecificRecord
       ]
     }], "default": null },
     { "name": "Status", "type": [ "null", "string" ], "default": null },
+    { "name": "Category", "type": [ "null", "string" ], "default": null },
     { "name": "Tags", "type": [ "null", { "type": "array", "items": "string" } ], "default": null },
     { "name": "Date", "type": { "type": "long", "logicalType": "timestamp-millis" } },
     { "name": "User", "type": "string" }
@@ -66,6 +67,11 @@ public sealed class ProductEvent : ISpecificRecord
     public string? Status { get; set; }
 
     /// <summary>
+    ///     Gets or sets the optional category.
+    /// </summary>
+    public string? Category { get; set; }
+
+    /// <summary>
     ///     Gets or sets the optional tags.
     /// </summary>
     public IList<string>? Tags { get; set; }
@@ -98,9 +104,10 @@ public sealed class ProductEvent : ISpecificRecord
             2 => ManufacturerId,
             3 => ProductDetails,
             4 => Status,
-            5 => Tags,
-            6 => Date,
-            7 => User,
+            5 => Category,
+            6 => Tags,
+            7 => Date,
+            8 => User,
             _ => throw new AvroRuntimeException($"Bad index {fieldPos} in {nameof(ProductEvent)}"),
         };
     }
@@ -145,6 +152,9 @@ public sealed class ProductEvent : ISpecificRecord
                 Status = fieldValue?.ToString();
                 break;
             case 5:
+                Category = fieldValue?.ToString();
+                break;
+            case 6:
                 Tags = fieldValue switch
                 {
                     null => null,
@@ -153,7 +163,7 @@ public sealed class ProductEvent : ISpecificRecord
                     _ => null,
                 };
                 break;
-            case 6:
+            case 7:
                 Date = fieldValue switch
                 {
                     DateTime value => value,
@@ -161,7 +171,7 @@ public sealed class ProductEvent : ISpecificRecord
                     _ => DateTime.MinValue,
                 };
                 break;
-            case 7:
+            case 8:
                 User = fieldValue?.ToString() ?? string.Empty;
                 break;
             default:

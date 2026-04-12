@@ -25,6 +25,7 @@ public static class ProductMappingExtensions
             product.Name,
             product.Description,
             product.Status,
+            product.Category,
             product.Tags);
     }
 }

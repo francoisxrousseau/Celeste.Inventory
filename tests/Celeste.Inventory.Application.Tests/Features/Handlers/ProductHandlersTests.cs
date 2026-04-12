@@ -38,6 +38,7 @@ public sealed class ProductHandlersTests
                 "  Celeste Tee  ",
                 "  Soft cotton shirt  ",
                 ProductStatus.Active,
+                ProductCategory.Apparel,
                 ["apparel", "cotton"],
                 Utc(2026, 4, 9, 12, 0)),
             CancellationToken.None);
@@ -46,6 +47,7 @@ public sealed class ProductHandlersTests
         Assert.Equal("Celeste Tee", response.Name);
         Assert.Equal("Soft cotton shirt", response.Description);
         Assert.Equal(ProductStatus.Active, response.Status);
+        Assert.Equal(ProductCategory.Apparel, response.Category);
         Assert.Equal(2, response.Tags?.Count);
         Assert.Single(repository.Items);
         Assert.Equal("alice", repository.Items[0].CreatedBy);
@@ -64,6 +66,7 @@ public sealed class ProductHandlersTests
             Name = "Old Product",
             Description = "old",
             Status = ProductStatus.Inactive,
+            Category = ProductCategory.Accessories,
             Tags = ["old"],
             CreatedBy = "alice",
             CreatedAt = Utc(2026, 4, 1, 8, 0),
@@ -88,6 +91,7 @@ public sealed class ProductHandlersTests
                 "  New Product  ",
                 "  desc  ",
                 ProductStatus.Active,
+                ProductCategory.Apparel,
                 ["new", "featured"],
                 Utc(2026, 4, 9, 13, 0)),
             CancellationToken.None);
@@ -96,6 +100,7 @@ public sealed class ProductHandlersTests
         Assert.Equal("New Product", response.Name);
         Assert.Equal("desc", response.Description);
         Assert.Equal(ProductStatus.Active, response.Status);
+        Assert.Equal(ProductCategory.Apparel, response.Category);
         Assert.Equal("bob", product.LastUpdatedBy);
         Assert.Equal(Utc(2026, 4, 9, 13, 0), product.LastUpdatedAt);
         Assert.Equal(1, publisher.UpdatedEvents.Count);
@@ -124,6 +129,7 @@ public sealed class ProductHandlersTests
                 "Product",
                 null,
                 ProductStatus.Active,
+                ProductCategory.Apparel,
                 null,
                 Utc(2026, 4, 9, 13, 0)),
             CancellationToken.None);
@@ -143,6 +149,7 @@ public sealed class ProductHandlersTests
             ManufacturerId = Guid.NewGuid(),
             Name = "Celeste Tee",
             Status = ProductStatus.Active,
+            Category = ProductCategory.Apparel,
             CreatedAt = Utc(2026, 4, 1, 8, 0),
             DeletedAt = Utc(2026, 4, 2, 8, 0),
         };
@@ -163,9 +170,9 @@ public sealed class ProductHandlersTests
         var repository = new FakeProductRepository();
         repository.Items.AddRange(
         [
-            new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Celeste Tee", Status = ProductStatus.Active, CreatedAt = Utc(2026, 4, 1, 8, 0) },
-            new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Celestial Cap", Status = ProductStatus.Active, CreatedAt = Utc(2026, 4, 1, 8, 0) },
-            new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Northern Boots", Status = ProductStatus.Active, CreatedAt = Utc(2026, 4, 1, 8, 0) },
+            new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Celeste Tee", Status = ProductStatus.Active, Category = ProductCategory.Apparel, CreatedAt = Utc(2026, 4, 1, 8, 0) },
+            new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Celestial Cap", Status = ProductStatus.Active, Category = ProductCategory.Apparel, CreatedAt = Utc(2026, 4, 1, 8, 0) },
+            new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Northern Boots", Status = ProductStatus.Active, Category = ProductCategory.Footwear, CreatedAt = Utc(2026, 4, 1, 8, 0) },
         ]);
 
         var handler = new ListProductsHandler(repository);
@@ -183,8 +190,8 @@ public sealed class ProductHandlersTests
     public async Task CountHandler_WithWhitespaceSearch_PassesNullSearchText()
     {
         var repository = new FakeProductRepository();
-        repository.Items.Add(new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Celeste Tee", Status = ProductStatus.Active, CreatedAt = Utc(2026, 4, 1, 8, 0) });
-        repository.Items.Add(new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Northern Boots", Status = ProductStatus.Active, CreatedAt = Utc(2026, 4, 1, 8, 0) });
+        repository.Items.Add(new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Celeste Tee", Status = ProductStatus.Active, Category = ProductCategory.Apparel, CreatedAt = Utc(2026, 4, 1, 8, 0) });
+        repository.Items.Add(new Product { Id = Guid.NewGuid(), ManufacturerId = Guid.NewGuid(), Name = "Northern Boots", Status = ProductStatus.Active, Category = ProductCategory.Footwear, CreatedAt = Utc(2026, 4, 1, 8, 0) });
 
         var handler = new CountProductsHandler(repository);
 
@@ -205,6 +212,7 @@ public sealed class ProductHandlersTests
             ManufacturerId = Guid.NewGuid(),
             Name = "Celeste Tee",
             Status = ProductStatus.Active,
+            Category = ProductCategory.Apparel,
             CreatedAt = Utc(2026, 4, 1, 8, 0),
         };
 
@@ -328,6 +336,7 @@ public sealed class ProductHandlersTests
             string name,
             string? description,
             ProductStatus status,
+            ProductCategory category,
             IReadOnlyList<string>? tags,
             string? updatedBy,
             DateTime updatedAt,
@@ -343,6 +352,7 @@ public sealed class ProductHandlersTests
             item.Name = name;
             item.Description = description;
             item.Status = status;
+            item.Category = category;
             item.Tags = tags;
             item.LastUpdatedBy = updatedBy;
             item.LastUpdatedAt = updatedAt;

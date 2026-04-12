@@ -14,10 +14,11 @@ public static class ProductEventFactory
         string name,
         string? description,
         string status,
+        string? category,
         IReadOnlyList<string>? tags,
         string? user,
         DateTime date)
-        => Create(id, manufacturerId, name, description, status, tags, ProductEventTypes.Created, user, date);
+        => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.Created, user, date);
 
     /// <summary>
     ///     Creates an updated-event payload.
@@ -28,10 +29,11 @@ public static class ProductEventFactory
         string name,
         string? description,
         string status,
+        string? category,
         IReadOnlyList<string>? tags,
         string? user,
         DateTime date)
-        => Create(id, manufacturerId, name, description, status, tags, ProductEventTypes.Updated, user, date);
+        => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.Updated, user, date);
 
     /// <summary>
     ///     Creates a deleted-event payload.
@@ -42,10 +44,11 @@ public static class ProductEventFactory
         string name,
         string? description,
         string status,
+        string? category,
         IReadOnlyList<string>? tags,
         string? user,
         DateTime date)
-        => Create(id, manufacturerId, name, description, status, tags, ProductEventTypes.Deleted, user, date);
+        => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.Deleted, user, date);
 
     private static ProductEvent Create(
         Guid id,
@@ -53,6 +56,7 @@ public static class ProductEventFactory
         string name,
         string? description,
         string status,
+        string? category,
         IReadOnlyList<string>? tags,
         string eventType,
         string? user,
@@ -69,6 +73,7 @@ public static class ProductEventFactory
                 Description = description,
             },
             Status = status,
+            Category = category,
             Tags = tags?.ToList(),
             User = user ?? string.Empty,
             Date = date.Kind == DateTimeKind.Utc ? date : date.ToUniversalTime(),

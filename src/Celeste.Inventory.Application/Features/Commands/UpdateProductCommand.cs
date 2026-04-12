@@ -22,6 +22,9 @@ using Emit.Mediator;
 /// <param name="Status">
 ///	The updated product status.
 /// </param>
+/// <param name="Category">
+///	The updated product category.
+/// </param>
 /// <param name="Tags">
 ///	The updated optional product tags.
 /// </param>
@@ -34,5 +37,6 @@ public sealed record UpdateProductCommand(
     string Name,
     string? Description,
     ProductStatus Status,
+    ProductCategory Category,
     IReadOnlyList<string>? Tags,
     DateTime UpdatedAt) : IRequest<ProductResponse>;

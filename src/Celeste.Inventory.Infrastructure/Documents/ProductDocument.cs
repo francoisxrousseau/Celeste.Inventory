@@ -43,6 +43,11 @@ public sealed class ProductDocument
     public ProductStatus Status { get; set; }
 
     /// <summary>
+    ///     Gets or sets the product category.
+    /// </summary>
+    public ProductCategory Category { get; set; }
+
+    /// <summary>
     ///     Gets or sets the optional product tags.
     /// </summary>
     public List<string>? Tags { get; set; }

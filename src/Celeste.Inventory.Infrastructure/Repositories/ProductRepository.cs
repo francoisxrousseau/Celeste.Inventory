@@ -103,6 +103,7 @@ public sealed class ProductRepository : IProductRepository
             .Set(x => x.NormalizedName, Product.NormalizeSearchText(product.Name) ?? string.Empty)
             .Set(x => x.Description, product.Description)
             .Set(x => x.Status, product.Status)
+            .Set(x => x.Category, product.Category)
             .Set(x => x.Tags, product.Tags?.ToList())
             .Set(x => x.LastUpdatedBy, product.LastUpdatedBy)
             .Set(x => x.LastUpdatedAt, product.LastUpdatedAt)
@@ -119,6 +120,7 @@ public sealed class ProductRepository : IProductRepository
         string name,
         string? description,
         ProductStatus status,
+        ProductCategory category,
         IReadOnlyList<string>? tags,
         string? updatedBy,
         DateTime updatedAt,
@@ -134,6 +136,7 @@ public sealed class ProductRepository : IProductRepository
             .Set(x => x.NormalizedName, normalizedName)
             .Set(x => x.Description, description)
             .Set(x => x.Status, status)
+            .Set(x => x.Category, category)
             .Set(x => x.Tags, tags == null ? null : tags.ToList())
             .Set(x => x.LastUpdatedBy, updatedBy)
             .Set(x => x.LastUpdatedAt, updatedAt);

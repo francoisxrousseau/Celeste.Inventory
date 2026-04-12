@@ -47,6 +47,7 @@ public sealed class UpdateProductHandler(
             request.Name.Trim(),
             request.Description?.Trim(),
             request.Status,
+            request.Category,
             request.Tags,
             currentUserAccessor.UserId,
             request.UpdatedAt,

@@ -19,6 +19,9 @@ using Emit.Mediator;
 /// <param name="Status">
 ///	The product status.
 /// </param>
+/// <param name="Category">
+///	The product category.
+/// </param>
 /// <param name="Tags">
 ///	The optional product tags.
 /// </param>
@@ -30,5 +33,6 @@ public sealed record CreateProductCommand(
     string Name,
     string? Description,
     ProductStatus Status,
+    ProductCategory Category,
     IReadOnlyList<string>? Tags,
     DateTime CreatedAt) : IRequest<ProductResponse>;

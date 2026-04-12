@@ -109,6 +109,7 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
             "  Celeste Shirt  ",
             "  cotton  ",
             ProductStatus.Inactive,
+            ProductCategory.Apparel,
             ["shirt", "cotton"],
             "bob",
             Utc(2026, 4, 2, 9, 30),
@@ -118,6 +119,7 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
         Assert.Equal("Celeste Shirt", updated.Name);
         Assert.Equal("  cotton  ", updated.Description);
         Assert.Equal(ProductStatus.Inactive, updated.Status);
+        Assert.Equal(ProductCategory.Apparel, updated.Category);
         Assert.Equal("bob", updated.LastUpdatedBy);
         Assert.Equal(Utc(2026, 4, 2, 9, 30), updated.LastUpdatedAt);
     }
@@ -135,6 +137,7 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
             "Celeste Shirt",
             "cotton",
             ProductStatus.Inactive,
+            ProductCategory.Apparel,
             ["shirt"],
             "charlie",
             Utc(2026, 4, 3, 10, 15),
@@ -192,6 +195,7 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
             "Celeste Shirt",
             "cotton",
             ProductStatus.Active,
+            ProductCategory.Apparel,
             null,
             "bob",
             Utc(2026, 4, 2, 9, 30),
@@ -229,6 +233,7 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
             Name = name,
             Description = "desc",
             Status = ProductStatus.Active,
+            Category = ProductCategory.Apparel,
             Tags = ["tag-1"],
             CreatedBy = createdBy,
             CreatedAt = createdAt,

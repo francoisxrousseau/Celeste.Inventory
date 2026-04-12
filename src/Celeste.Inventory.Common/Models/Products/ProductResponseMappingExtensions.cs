@@ -22,6 +22,7 @@ public static class ProductResponseMappingExtensions
             response.Name,
             response.Description,
             response.Status,
+            response.Category,
             response.Tags);
     }
 
