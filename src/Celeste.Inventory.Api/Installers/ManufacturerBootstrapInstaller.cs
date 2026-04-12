@@ -53,6 +53,12 @@ public static class ManufacturerBootstrapInstaller
                 mediator.AddHandler<GetManufacturerByIdHandler>();
                 mediator.AddHandler<ListManufacturersHandler>();
                 mediator.AddHandler<CountManufacturersHandler>();
+                mediator.AddHandler<CreateProductHandler>();
+                mediator.AddHandler<UpdateProductHandler>();
+                mediator.AddHandler<DeleteProductHandler>();
+                mediator.AddHandler<GetProductByIdHandler>();
+                mediator.AddHandler<ListProductsHandler>();
+                mediator.AddHandler<CountProductsHandler>();
             });
 
             emit.AddMongoDb(mongo =>
@@ -84,6 +90,15 @@ public static class ManufacturerBootstrapInstaller
                     topic.SetKeyDeserializer(Deserializers.Utf8);
                     topic.SetAvroValueSerializer<string, ManufacturerEvent>();
                     topic.SetAvroValueDeserializer<string, ManufacturerEvent>();
+                    topic.Producer();
+                });
+
+                kafka.Topic<string, ProductEvent>(ProductEventTopics.Product, topic =>
+                {
+                    topic.SetKeySerializer(Serializers.Utf8);
+                    topic.SetKeyDeserializer(Deserializers.Utf8);
+                    topic.SetAvroValueSerializer<string, ProductEvent>();
+                    topic.SetAvroValueDeserializer<string, ProductEvent>();
                     topic.Producer();
                 });
             });

@@ -1,0 +1,30 @@
+{
+  "type": "record",
+  "name": "ProductEvent",
+  "namespace": "Celeste.Inventory.Events",
+  "fields": [
+    { "name": "Id", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "EventType", "type": "string" },
+    { "name": "ManufacturerId", "type": [ "null", { "type": "string", "logicalType": "uuid" } ], "default": null },
+    {
+      "name": "ProductDetails",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "ProductDetails",
+          "fields": [
+            { "name": "Name", "type": [ "null", "string" ], "default": null },
+            { "name": "Description", "type": [ "null", "string" ], "default": null }
+          ]
+        }
+      ],
+      "default": null
+    },
+    { "name": "Status", "type": [ "null", "string" ], "default": null },
+    { "name": "Category", "type": [ "null", "string" ], "default": null },
+    { "name": "Tags", "type": [ "null", { "type": "array", "items": "string" } ], "default": null },
+    { "name": "Date", "type": { "type": "long", "logicalType": "timestamp-millis" } },
+    { "name": "User", "type": "string" }
+  ]
+}

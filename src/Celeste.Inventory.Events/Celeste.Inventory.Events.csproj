@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Schemas\manufacturer-event.avsc" />
+    <EmbeddedResource Include="Schemas\product-event.avsc" />
   </ItemGroup>
 
 </Project>
