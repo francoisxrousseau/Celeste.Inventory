@@ -129,6 +129,154 @@ public interface IProductRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    ///     Adds a variant to a product aggregate.
+    /// </summary>
+    /// <param name="productId">
+    ///     The product identifier.
+    /// </param>
+    /// <param name="variant">
+    ///     The variant to add.
+    /// </param>
+    /// <param name="createdBy">
+    ///     The user responsible for the create.
+    /// </param>
+    /// <param name="createdAt">
+    ///     The UTC create timestamp.
+    /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token for the asynchronous operation.
+    /// </param>
+    /// <returns>
+    ///     The updated product, or <see langword="null"/> when the product does not exist.
+    /// </returns>
+    Task<Product?> AddVariantAsync(
+        Guid productId,
+        Variant variant,
+        string? createdBy,
+        DateTime createdAt,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Updates a variant inside a product aggregate.
+    /// </summary>
+    /// <param name="productId">
+    ///     The product identifier.
+    /// </param>
+    /// <param name="variantId">
+    ///     The variant identifier.
+    /// </param>
+    /// <param name="sku">
+    ///     The updated stock keeping unit.
+    /// </param>
+    /// <param name="price">
+    ///     The updated price.
+    /// </param>
+    /// <param name="discountInformations">
+    ///     The updated optional discount data.
+    /// </param>
+    /// <param name="status">
+    ///     The updated status.
+    /// </param>
+    /// <param name="attributes">
+    ///     The updated optional attributes.
+    /// </param>
+    /// <param name="updatedBy">
+    ///     The user responsible for the update.
+    /// </param>
+    /// <param name="updatedAt">
+    ///     The UTC update timestamp.
+    /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token for the asynchronous operation.
+    /// </param>
+    /// <returns>
+    ///     The updated product, or <see langword="null"/> when no matching variant exists.
+    /// </returns>
+    Task<Product?> UpdateVariantAsync(
+        Guid productId,
+        Guid variantId,
+        string sku,
+        decimal price,
+        DiscountInformations? discountInformations,
+        ProductStatus status,
+        IReadOnlyList<VariantAttribute>? attributes,
+        string? updatedBy,
+        DateTime updatedAt,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Soft deletes a variant inside a product aggregate.
+    /// </summary>
+    /// <param name="productId">
+    ///     The product identifier.
+    /// </param>
+    /// <param name="variantId">
+    ///     The variant identifier.
+    /// </param>
+    /// <param name="deletedBy">
+    ///     The user responsible for the delete.
+    /// </param>
+    /// <param name="deletedAt">
+    ///     The UTC delete timestamp.
+    /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token for the asynchronous operation.
+    /// </param>
+    /// <returns>
+    ///     The updated product, or <see langword="null"/> when no matching variant exists.
+    /// </returns>
+    Task<Product?> DeleteVariantAsync(
+        Guid productId,
+        Guid variantId,
+        string? deletedBy,
+        DateTime deletedAt,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Gets a variant by identifier.
+    /// </summary>
+    /// <param name="productId">
+    ///     The product identifier.
+    /// </param>
+    /// <param name="variantId">
+    ///     The variant identifier.
+    /// </param>
+    /// <param name="includeDeleted">
+    ///     Indicates whether deleted variants may be returned.
+    /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token for the asynchronous operation.
+    /// </param>
+    /// <returns>
+    ///     The matching variant, or <see langword="null"/> when no match exists.
+    /// </returns>
+    Task<Variant?> GetVariantByIdAsync(
+        Guid productId,
+        Guid variantId,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Gets all variants for a product.
+    /// </summary>
+    /// <param name="productId">
+    ///     The product identifier.
+    /// </param>
+    /// <param name="includeDeleted">
+    ///     Indicates whether deleted variants may be returned.
+    /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token for the asynchronous operation.
+    /// </param>
+    /// <returns>
+    ///     The matching variants, or an empty collection when the product does not exist.
+    /// </returns>
+    Task<IReadOnlyList<Variant>> GetVariantsAsync(
+        Guid productId,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     ///     Searches products using a name substring filter.
     /// </summary>
     /// <param name="searchText">

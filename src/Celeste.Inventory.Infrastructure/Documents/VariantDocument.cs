@@ -5,57 +5,40 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 /// <summary>
-///     Represents the MongoDB product document.
+///     Represents an embedded MongoDB variant document.
 /// </summary>
-public sealed class ProductDocument
+public sealed class VariantDocument
 {
     /// <summary>
-    ///     Gets or sets the product identifier.
+    ///     Gets or sets the variant identifier.
     /// </summary>
-    [BsonId]
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; set; }
 
     /// <summary>
-    ///     Gets or sets the manufacturer identifier.
+    ///     Gets or sets the stock keeping unit.
     /// </summary>
-    [BsonRepresentation(BsonType.String)]
-    public Guid ManufacturerId { get; set; }
+    public string Sku { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the product name.
+    ///     Gets or sets the variant price.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public decimal Price { get; set; }
 
     /// <summary>
-    ///     Gets or sets the normalized product name used for queries.
+    ///     Gets or sets the optional discount details.
     /// </summary>
-    public string NormalizedName { get; set; } = string.Empty;
+    public DiscountInformationsDocument? DiscountInformations { get; set; }
 
     /// <summary>
-    ///     Gets or sets the optional product description.
-    /// </summary>
-    public string? Description { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the product status.
+    ///     Gets or sets the variant status.
     /// </summary>
     public ProductStatus Status { get; set; }
 
     /// <summary>
-    ///     Gets or sets the product category.
+    ///     Gets or sets the optional variant attributes.
     /// </summary>
-    public ProductCategory Category { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the optional product tags.
-    /// </summary>
-    public List<string>? Tags { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the embedded variant documents.
-    /// </summary>
-    public List<VariantDocument>? Variants { get; set; }
+    public List<VariantAttributeDocument>? Attributes { get; set; }
 
     /// <summary>
     ///     Gets or sets the user that created the record.

@@ -48,6 +48,35 @@ public sealed class ProductRepository : IProductRepository
     }
 
     /// <inheritdoc />
+    public async Task<Product?> AddVariantAsync(
+        Guid productId,
+        Variant variant,
+        string? createdBy,
+        DateTime createdAt,
+        CancellationToken cancellationToken = default)
+    {
+        variant.CreatedBy = createdBy;
+        variant.CreatedAt = createdAt;
+        variant.LastUpdatedBy = null;
+        variant.LastUpdatedAt = null;
+        variant.DeletedBy = null;
+        variant.DeletedAt = null;
+
+        var filter = BuildActiveProductFilter(productId);
+        var update = Builders<ProductDocument>.Update
+            .Push(x => x.Variants, variant.ToDocument())
+            .Set(x => x.LastUpdatedBy, createdBy)
+            .Set(x => x.LastUpdatedAt, createdAt);
+        var options = new FindOneAndUpdateOptions<ProductDocument>
+        {
+            ReturnDocument = ReturnDocument.After,
+        };
+
+        var document = await _collection.FindOneAndUpdateAsync(GetRequiredSession(), filter, update, options, cancellationToken);
+        return document?.ToDomain();
+    }
+
+    /// <inheritdoc />
     public async Task<Product?> DeleteAsync(Guid id, string? deletedBy, DateTime deletedAt, CancellationToken cancellationToken = default)
     {
         var filter = Builders<ProductDocument>.Filter.Eq(x => x.Id, id) &
@@ -55,6 +84,29 @@ public sealed class ProductRepository : IProductRepository
         var update = Builders<ProductDocument>.Update
             .Set(x => x.DeletedBy, deletedBy)
             .Set(x => x.DeletedAt, deletedAt);
+        var options = new FindOneAndUpdateOptions<ProductDocument>
+        {
+            ReturnDocument = ReturnDocument.After,
+        };
+
+        var document = await _collection.FindOneAndUpdateAsync(GetRequiredSession(), filter, update, options, cancellationToken);
+        return document?.ToDomain();
+    }
+
+    /// <inheritdoc />
+    public async Task<Product?> DeleteVariantAsync(
+        Guid productId,
+        Guid variantId,
+        string? deletedBy,
+        DateTime deletedAt,
+        CancellationToken cancellationToken = default)
+    {
+        var filter = BuildActiveProductWithVariantFilter(productId, variantId);
+        var update = Builders<ProductDocument>.Update
+            .Set("Variants.$.DeletedBy", deletedBy)
+            .Set("Variants.$.DeletedAt", deletedAt)
+            .Set(x => x.LastUpdatedBy, deletedBy)
+            .Set(x => x.LastUpdatedAt, deletedAt);
         var options = new FindOneAndUpdateOptions<ProductDocument>
         {
             ReturnDocument = ReturnDocument.After,
@@ -80,6 +132,45 @@ public sealed class ProductRepository : IProductRepository
         }
 
         return document.ToDomain();
+    }
+
+    /// <inheritdoc />
+    public async Task<Variant?> GetVariantByIdAsync(
+        Guid productId,
+        Guid variantId,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default)
+    {
+        var document = await _collection.Find(BuildActiveProductFilter(productId))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (document?.Variants is null)
+            return null;
+
+        var variant = document.Variants.FirstOrDefault(x => x.Id == variantId);
+        if (variant is null || (!includeDeleted && variant.DeletedAt is not null))
+            return null;
+
+        return variant.ToDomain();
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Variant>> GetVariantsAsync(
+        Guid productId,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default)
+    {
+        var document = await _collection.Find(BuildActiveProductFilter(productId))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (document?.Variants is null)
+            return [];
+
+        var variants = includeDeleted
+            ? document.Variants
+            : document.Variants.Where(x => x.DeletedAt is null);
+
+        return variants.Select(x => x.ToDomain()).ToList();
     }
 
     /// <inheritdoc />
@@ -150,9 +241,56 @@ public sealed class ProductRepository : IProductRepository
         return document?.ToDomain();
     }
 
+    /// <inheritdoc />
+    public async Task<Product?> UpdateVariantAsync(
+        Guid productId,
+        Guid variantId,
+        string sku,
+        decimal price,
+        DiscountInformations? discountInformations,
+        ProductStatus status,
+        IReadOnlyList<VariantAttribute>? attributes,
+        string? updatedBy,
+        DateTime updatedAt,
+        CancellationToken cancellationToken = default)
+    {
+        var filter = BuildActiveProductWithVariantFilter(productId, variantId);
+        var update = Builders<ProductDocument>.Update
+            .Set("Variants.$.Sku", sku.Trim())
+            .Set("Variants.$.Price", price)
+            .Set("Variants.$.DiscountInformations", discountInformations?.ToDocument())
+            .Set("Variants.$.Status", status)
+            .Set("Variants.$.Attributes", attributes?.Select(x => x.ToDocument()).ToList())
+            .Set("Variants.$.LastUpdatedBy", updatedBy)
+            .Set("Variants.$.LastUpdatedAt", updatedAt)
+            .Set(x => x.LastUpdatedBy, updatedBy)
+            .Set(x => x.LastUpdatedAt, updatedAt);
+        var options = new FindOneAndUpdateOptions<ProductDocument>
+        {
+            ReturnDocument = ReturnDocument.After,
+        };
+
+        var document = await _collection.FindOneAndUpdateAsync(GetRequiredSession(), filter, update, options, cancellationToken);
+        return document?.ToDomain();
+    }
+
     private IClientSessionHandle GetRequiredSession()
     {
         return _sessionAccessor.Session ?? throw new InvalidOperationException("An active MongoDB session is required for product write operations.");
+    }
+
+    private static FilterDefinition<ProductDocument> BuildActiveProductFilter(Guid productId)
+    {
+        return Builders<ProductDocument>.Filter.Eq(x => x.Id, productId) &
+            Builders<ProductDocument>.Filter.Eq(x => x.DeletedAt, null as DateTime?);
+    }
+
+    private static FilterDefinition<ProductDocument> BuildActiveProductWithVariantFilter(Guid productId, Guid variantId)
+    {
+        return BuildActiveProductFilter(productId) &
+            Builders<ProductDocument>.Filter.ElemMatch(
+                x => x.Variants,
+                variant => variant.Id == variantId && variant.DeletedAt == null);
     }
 
     private static FilterDefinition<ProductDocument> BuildSearchFilter(string? searchText, bool includeDeleted)
