@@ -62,7 +62,7 @@ public sealed class Variant : ISpecificRecord
     /// <summary>
     ///     Gets or sets the optional price.
     /// </summary>
-    public decimal? Price { get; set; }
+    public AvroDecimal? Price { get; set; }
 
     /// <summary>
     ///     Gets or sets the optional discount.
@@ -130,10 +130,11 @@ public sealed class Variant : ISpecificRecord
                 Price = fieldValue switch
                 {
                     null => null,
-                    decimal value => value,
-                    double value => (decimal)value,
-                    string value when decimal.TryParse(value, out var parsed) => parsed,
-                    _ => null,
+                    AvroDecimal value => value,
+                    decimal value => AvroDecimalSerializer.Serialize(value),
+                    byte[] value => AvroDecimalSerializer.FromBytes(value),
+                    IReadOnlyList<byte> value => AvroDecimalSerializer.FromBytes(value.ToArray()),
+                    _ => Price,
                 };
                 break;
             case 3:

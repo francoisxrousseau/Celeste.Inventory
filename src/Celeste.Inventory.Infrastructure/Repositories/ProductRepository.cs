@@ -5,6 +5,7 @@ using Celeste.Inventory.Core.Domain;
 using Celeste.Inventory.Core.Repositories;
 using Celeste.Inventory.Infrastructure.Documents;
 using Celeste.Inventory.Infrastructure.Mapping;
+using MongoDB.Bson;
 using Emit.MongoDB;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
@@ -55,18 +56,8 @@ public sealed class ProductRepository : IProductRepository
         DateTime createdAt,
         CancellationToken cancellationToken = default)
     {
-        variant.CreatedBy = createdBy;
-        variant.CreatedAt = createdAt;
-        variant.LastUpdatedBy = null;
-        variant.LastUpdatedAt = null;
-        variant.DeletedBy = null;
-        variant.DeletedAt = null;
-
         var filter = BuildActiveProductFilter(productId);
-        var update = Builders<ProductDocument>.Update
-            .Push(x => x.Variants, variant.ToDocument())
-            .Set(x => x.LastUpdatedBy, createdBy)
-            .Set(x => x.LastUpdatedAt, createdAt);
+        var update = BuildAppendVariantUpdate(variant.ToDocument(), createdBy, createdAt);
         var options = new FindOneAndUpdateOptions<ProductDocument>
         {
             ReturnDocument = ReturnDocument.After,
@@ -291,6 +282,38 @@ public sealed class ProductRepository : IProductRepository
             Builders<ProductDocument>.Filter.ElemMatch(
                 x => x.Variants,
                 variant => variant.Id == variantId && variant.DeletedAt == null);
+    }
+
+    private static UpdateDefinition<ProductDocument> BuildAppendVariantUpdate(
+        VariantDocument variantDocument,
+        string? updatedBy,
+        DateTime updatedAt)
+    {
+        var stage = new BsonDocument("$set", new BsonDocument
+        {
+            {
+                "Variants",
+                new BsonDocument("$concatArrays", new BsonArray
+                {
+                    new BsonDocument("$ifNull", new BsonArray
+                    {
+                        "$Variants",
+                        new BsonArray(),
+                    }),
+                    new BsonArray
+                    {
+                        variantDocument.ToBsonDocument(),
+                    },
+                })
+            },
+            { "LastUpdatedBy", updatedBy },
+            { "LastUpdatedAt", updatedAt },
+        });
+
+        var pipeline = new EmptyPipelineDefinition<ProductDocument>()
+            .AppendStage<ProductDocument, ProductDocument, ProductDocument>(stage);
+
+        return Builders<ProductDocument>.Update.Pipeline(pipeline);
     }
 
     private static FilterDefinition<ProductDocument> BuildSearchFilter(string? searchText, bool includeDeleted)

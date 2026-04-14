@@ -59,6 +59,11 @@ public static class ManufacturerBootstrapInstaller
                 mediator.AddHandler<GetProductByIdHandler>();
                 mediator.AddHandler<ListProductsHandler>();
                 mediator.AddHandler<CountProductsHandler>();
+                mediator.AddHandler<CreateVariantHandler>();
+                mediator.AddHandler<UpdateVariantHandler>();
+                mediator.AddHandler<DeleteVariantHandler>();
+                mediator.AddHandler<GetVariantByIdHandler>();
+                mediator.AddHandler<ListVariantsHandler>();
             });
 
             emit.AddMongoDb(mongo =>

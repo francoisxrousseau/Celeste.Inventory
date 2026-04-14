@@ -80,6 +80,31 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
     }
 
     [Fact]
+    public async Task AddVariantAsync_WhenProductVariantsAreNull_InitializesVariantsAndPersists()
+    {
+        var product = CreateProduct("Celeste Tee", "alice", Utc(2026, 4, 1, 8, 0), variants: null);
+        await _repository.CreateAsync(product, CancellationToken.None);
+
+        var variant = CreateVariant("TEE-BLUE-L", "alice", Utc(2026, 4, 6, 10, 30));
+
+        var updated = await _repository.AddVariantAsync(
+            product.Id,
+            variant,
+            "alice",
+            Utc(2026, 4, 6, 10, 30),
+            CancellationToken.None);
+
+        var result = await _repository.GetVariantByIdAsync(product.Id, variant.Id, includeDeleted: false, CancellationToken.None);
+
+        Assert.NotNull(updated);
+        Assert.NotNull(updated!.Variants);
+        Assert.Single(updated.Variants!);
+        Assert.NotNull(result);
+        Assert.Equal(variant.Id, result!.Id);
+        Assert.Equal("TEE-BLUE-L", result.Sku);
+    }
+
+    [Fact]
     public async Task CreateAsync_WithoutActiveSession_ThrowsInvalidOperationException()
     {
         var repository = new ProductRepository(_database, new FakeMongoSessionAccessor(null));
@@ -255,7 +280,7 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
             ?? throw new InvalidOperationException("Expected document was not found.");
     }
 
-    private static Product CreateProduct(string name, string? createdBy, DateTime createdAt)
+    private static Product CreateProduct(string name, string? createdBy, DateTime createdAt, IReadOnlyList<Variant>? variants = null)
     {
         return new Product
         {
@@ -266,7 +291,7 @@ public sealed class ProductRepositoryIntegrationTests : IDisposable
             Status = ProductStatus.Active,
             Category = ProductCategory.Apparel,
             Tags = ["tag-1"],
-            Variants = [],
+            Variants = variants ?? [],
             CreatedBy = createdBy,
             CreatedAt = createdAt,
         };

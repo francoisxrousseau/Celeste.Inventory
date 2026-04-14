@@ -167,12 +167,12 @@ public sealed class ProductEventPublisher(
         {
             Id = variant.Id,
             Sku = variant.Sku,
-            Price = variant.Price,
+            Price = AvroDecimalSerializer.Serialize(variant.Price),
             Discount = variant.DiscountInformations is null
                 ? null
                 : new EventDiscountInformations
                 {
-                    DiscountPercentage = variant.DiscountInformations.DiscountPercentage,
+                    DiscountPercentage = AvroDecimalSerializer.Serialize(variant.DiscountInformations.DiscountPercentage),
                     DiscountStartAtUtc = variant.DiscountInformations.DiscountStartAtUtc,
                     DiscountEndAtUtc = variant.DiscountInformations.DiscountEndAtUtc,
                 },

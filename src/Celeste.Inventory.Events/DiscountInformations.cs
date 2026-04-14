@@ -31,7 +31,7 @@ public sealed class DiscountInformations : ISpecificRecord
     /// <summary>
     ///     Gets or sets the discount percentage.
     /// </summary>
-    public decimal DiscountPercentage { get; set; }
+    public AvroDecimal DiscountPercentage { get; set; } = AvroDecimalSerializer.Serialize(0m);
 
     /// <summary>
     ///     Gets or sets the UTC discount start timestamp.
@@ -56,7 +56,7 @@ public sealed class DiscountInformations : ISpecificRecord
     {
         return fieldPos switch
         {
-            0 => DiscountPercentage,
+            0 => AvroDecimalSerializer.ToBytes(DiscountPercentage),
             1 => DiscountStartAtUtc,
             2 => DiscountEndAtUtc,
             _ => throw new AvroRuntimeException($"Bad index {fieldPos} in {nameof(DiscountInformations)}"),
@@ -79,10 +79,11 @@ public sealed class DiscountInformations : ISpecificRecord
             case 0:
                 DiscountPercentage = fieldValue switch
                 {
-                    decimal value => value,
-                    double value => (decimal)value,
-                    string value when decimal.TryParse(value, out var parsed) => parsed,
-                    _ => default,
+                    AvroDecimal value => value,
+                    decimal value => AvroDecimalSerializer.Serialize(value),
+                    byte[] value => AvroDecimalSerializer.FromBytes(value),
+                    IReadOnlyList<byte> value => AvroDecimalSerializer.FromBytes(value.ToArray()),
+                    _ => DiscountPercentage,
                 };
                 break;
             case 1:
