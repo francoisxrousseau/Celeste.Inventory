@@ -33,4 +33,5 @@ public sealed record ProductResponse(
     string? Description,
     ProductStatus Status,
     ProductCategory Category,
-    IReadOnlyList<string>? Tags);
+    IReadOnlyList<string>? Tags,
+    IReadOnlyList<VariantResponse>? Variants);

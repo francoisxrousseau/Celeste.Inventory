@@ -43,6 +43,11 @@ public sealed class Product : AuditableEntity
     public IReadOnlyList<string>? Tags { get; set; }
 
     /// <summary>
+    ///     Gets or sets the embedded product variants.
+    /// </summary>
+    public IReadOnlyList<Variant>? Variants { get; set; }
+
+    /// <summary>
     ///     Normalizes free-text input for deterministic product comparisons.
     /// </summary>
     /// <param name="value">

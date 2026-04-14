@@ -13,7 +13,7 @@ public sealed class ProductEvent : ISpecificRecord
   "type": "record",
   "name": "ProductEvent",
   "namespace": "Celeste.Inventory.Events",
-  "fields": [
+    "fields": [
     { "name": "Id", "type": { "type": "string", "logicalType": "uuid" } },
     { "name": "EventType", "type": "string" },
     { "name": "ManufacturerId", "type": [ "null", { "type": "string", "logicalType": "uuid" } ], "default": null },
@@ -23,6 +23,36 @@ public sealed class ProductEvent : ISpecificRecord
       "fields": [
         { "name": "Name", "type": [ "null", "string" ], "default": null },
         { "name": "Description", "type": [ "null", "string" ], "default": null }
+      ]
+    }], "default": null },
+    { "name": "Variant", "type": [ "null", {
+      "type": "record",
+      "name": "Variant",
+      "fields": [
+        { "name": "Id", "type": { "type": "string", "logicalType": "uuid" } },
+        { "name": "Sku", "type": "string" },
+        { "name": "Price", "type": [ "null", { "type": "bytes", "logicalType": "decimal", "precision": 18, "scale": 2 } ], "default": null },
+        { "name": "Discount", "type": [ "null", {
+          "type": "record",
+          "name": "DiscountInformations",
+          "fields": [
+            { "name": "DiscountPercentage", "type": "bytes", "logicalType": "decimal", "precision": 18, "scale": 2 },
+            { "name": "DiscountStartAtUtc", "type": { "type": "long", "logicalType": "timestamp-millis" } },
+            { "name": "DiscountEndAtUtc", "type": { "type": "long", "logicalType": "timestamp-millis" } }
+          ]
+        }], "default": null },
+        { "name": "Status", "type": [ "null", "string" ], "default": null },
+        { "name": "Attributes", "type": [ "null", {
+          "type": "array",
+          "items": {
+            "type": "record",
+            "name": "VariantAttribute",
+            "fields": [
+              { "name": "Name", "type": "string" },
+              { "name": "Value", "type": "string" }
+            ]
+          }
+        }], "default": null }
       ]
     }], "default": null },
     { "name": "Status", "type": [ "null", "string" ], "default": null },
@@ -60,6 +90,11 @@ public sealed class ProductEvent : ISpecificRecord
     ///     Gets or sets the optional product details.
     /// </summary>
     public ProductDetails? ProductDetails { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the optional variant details.
+    /// </summary>
+    public Variant? Variant { get; set; }
 
     /// <summary>
     ///     Gets or sets the optional status.
@@ -103,11 +138,12 @@ public sealed class ProductEvent : ISpecificRecord
             1 => EventType,
             2 => ManufacturerId,
             3 => ProductDetails,
-            4 => Status,
-            5 => Category,
-            6 => Tags,
-            7 => Date,
-            8 => User,
+            4 => Variant,
+            5 => Status,
+            6 => Category,
+            7 => Tags,
+            8 => Date,
+            9 => User,
             _ => throw new AvroRuntimeException($"Bad index {fieldPos} in {nameof(ProductEvent)}"),
         };
     }
@@ -149,12 +185,15 @@ public sealed class ProductEvent : ISpecificRecord
                 ProductDetails = fieldValue as ProductDetails;
                 break;
             case 4:
-                Status = fieldValue?.ToString();
+                Variant = fieldValue as Variant;
                 break;
             case 5:
-                Category = fieldValue?.ToString();
+                Status = fieldValue?.ToString();
                 break;
             case 6:
+                Category = fieldValue?.ToString();
+                break;
+            case 7:
                 Tags = fieldValue switch
                 {
                     null => null,
@@ -163,7 +202,7 @@ public sealed class ProductEvent : ISpecificRecord
                     _ => null,
                 };
                 break;
-            case 7:
+            case 8:
                 Date = fieldValue switch
                 {
                     DateTime value => value,
@@ -171,7 +210,7 @@ public sealed class ProductEvent : ISpecificRecord
                     _ => DateTime.MinValue,
                 };
                 break;
-            case 8:
+            case 9:
                 User = fieldValue?.ToString() ?? string.Empty;
                 break;
             default:

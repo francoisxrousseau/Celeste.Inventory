@@ -50,6 +50,54 @@ public static class ProductEventFactory
         DateTime date)
         => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.Deleted, user, date);
 
+    /// <summary>
+    ///     Creates a variant created-event payload.
+    /// </summary>
+    public static ProductEvent VariantCreated(
+        Guid id,
+        Guid manufacturerId,
+        string name,
+        string? description,
+        string status,
+        string? category,
+        IReadOnlyList<string>? tags,
+        Variant variant,
+        string? user,
+        DateTime date)
+        => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.VariantCreated, variant, user, date);
+
+    /// <summary>
+    ///     Creates a variant updated-event payload.
+    /// </summary>
+    public static ProductEvent VariantUpdated(
+        Guid id,
+        Guid manufacturerId,
+        string name,
+        string? description,
+        string status,
+        string? category,
+        IReadOnlyList<string>? tags,
+        Variant variant,
+        string? user,
+        DateTime date)
+        => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.VariantUpdated, variant, user, date);
+
+    /// <summary>
+    ///     Creates a variant deleted-event payload.
+    /// </summary>
+    public static ProductEvent VariantDeleted(
+        Guid id,
+        Guid manufacturerId,
+        string name,
+        string? description,
+        string status,
+        string? category,
+        IReadOnlyList<string>? tags,
+        Variant variant,
+        string? user,
+        DateTime date)
+        => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.VariantDeleted, variant, user, date);
+
     private static ProductEvent Create(
         Guid id,
         Guid manufacturerId,
@@ -59,6 +107,20 @@ public static class ProductEventFactory
         string? category,
         IReadOnlyList<string>? tags,
         string eventType,
+        string? user,
+        DateTime date)
+        => Create(id, manufacturerId, name, description, status, category, tags, eventType, null, user, date);
+
+    private static ProductEvent Create(
+        Guid id,
+        Guid manufacturerId,
+        string name,
+        string? description,
+        string status,
+        string? category,
+        IReadOnlyList<string>? tags,
+        string eventType,
+        Variant? variant,
         string? user,
         DateTime date)
     {
@@ -72,6 +134,7 @@ public static class ProductEventFactory
                 Name = name,
                 Description = description,
             },
+            Variant = variant,
             Status = status,
             Category = category,
             Tags = tags?.ToList(),
@@ -79,4 +142,5 @@ public static class ProductEventFactory
             Date = date.Kind == DateTimeKind.Utc ? date : date.ToUniversalTime(),
         };
     }
+
 }
