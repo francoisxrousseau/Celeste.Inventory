@@ -37,7 +37,7 @@ public sealed class ManufacturerHandlersTests
         Assert.Single(repository.Items);
         Assert.Equal("Celeste Labs", repository.Items[0].Name);
         Assert.Equal("alice", repository.Items[0].CreatedBy);
-        Assert.Equal(1, publisher.CreatedEvents.Count);
+        Assert.Single(publisher.CreatedEvents);
         Assert.Equal(1, unitOfWork.BeginCalls);
         Assert.Equal(1, unitOfWork.CommitCalls);
     }
@@ -100,7 +100,7 @@ public sealed class ManufacturerHandlersTests
         Assert.Equal("bob", manufacturer.LastUpdatedBy);
         Assert.Equal(Utc(2026, 4, 3, 9, 30), manufacturer.LastUpdatedAt);
         Assert.Equal("alice", manufacturer.CreatedBy);
-        Assert.Equal(1, publisher.UpdatedEvents.Count);
+        Assert.Single(publisher.UpdatedEvents);
         Assert.Equal(1, unitOfWork.BeginCalls);
         Assert.Equal(1, unitOfWork.CommitCalls);
         Assert.Equal(1, repository.AtomicUpdateCalls);
@@ -187,7 +187,7 @@ public sealed class ManufacturerHandlersTests
         Assert.Equal("charlie", manufacturer.DeletedBy);
         Assert.Equal(Utc(2026, 4, 4, 10, 15), manufacturer.DeletedAt);
         Assert.True(manufacturer.IsDeleted);
-        Assert.Equal(1, publisher.DeletedEvents.Count);
+        Assert.Single(publisher.DeletedEvents);
         Assert.Equal(1, unitOfWork.BeginCalls);
         Assert.Equal(1, unitOfWork.CommitCalls);
         Assert.Equal(1, repository.AtomicDeleteCalls);

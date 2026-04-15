@@ -52,7 +52,7 @@ public sealed class ProductHandlersTests
         Assert.Equal(2, response.Tags?.Count);
         Assert.Single(repository.Items);
         Assert.Equal("alice", repository.Items[0].CreatedBy);
-        Assert.Equal(1, publisher.CreatedEvents.Count);
+        Assert.Single(publisher.CreatedEvents);
         Assert.Equal(1, unitOfWork.BeginCalls);
         Assert.Equal(1, unitOfWork.CommitCalls);
     }
@@ -98,7 +98,7 @@ public sealed class ProductHandlersTests
         Assert.Equal(24.99m, variant.Price);
         Assert.Equal("alice", repository.Items[0].Variants![0].CreatedBy);
         Assert.Equal(Utc(2026, 4, 9, 12, 0), repository.Items[0].Variants![0].CreatedAt);
-        Assert.Equal(1, publisher.CreatedEvents.Count);
+        Assert.Single(publisher.CreatedEvents);
         Assert.Single(publisher.CreatedEvents[0].Variants!);
     }
 
@@ -149,7 +149,7 @@ public sealed class ProductHandlersTests
         Assert.Equal(ProductCategory.Apparel, response.Category);
         Assert.Equal("bob", product.LastUpdatedBy);
         Assert.Equal(Utc(2026, 4, 9, 13, 0), product.LastUpdatedAt);
-        Assert.Equal(1, publisher.UpdatedEvents.Count);
+        Assert.Single(publisher.UpdatedEvents);
         Assert.Equal(1, unitOfWork.BeginCalls);
         Assert.Equal(1, unitOfWork.CommitCalls);
     }
@@ -281,7 +281,7 @@ public sealed class ProductHandlersTests
         Assert.Equal("charlie", product.DeletedBy);
         Assert.Equal(Utc(2026, 4, 9, 14, 0), product.DeletedAt);
         Assert.True(product.IsDeleted);
-        Assert.Equal(1, publisher.DeletedEvents.Count);
+        Assert.Single(publisher.DeletedEvents);
         Assert.Equal(1, unitOfWork.BeginCalls);
         Assert.Equal(1, unitOfWork.CommitCalls);
     }
