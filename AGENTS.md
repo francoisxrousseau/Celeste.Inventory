@@ -10,6 +10,9 @@ dotnet build
 
 # Run the API (HTTP: 5201, HTTPS: 7226)
 dotnet run --project src/Celeste.Inventory.Api/Celeste.Inventory.Api.csproj
+
+# Format all projects after generating or editing code
+dotnet format Celeste.Inventory.slnx
 ```
 
 ## Architecture
@@ -65,6 +68,8 @@ Api (Controller)
   {
   }
   ```
+- **Formatting after code generation**: Run `dotnet format Celeste.Inventory.slnx` after generating or editing code so formatting is applied before handing work back.
+
 ## Deployment
 
 
