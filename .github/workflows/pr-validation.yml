@@ -48,5 +48,10 @@ jobs:
       - name: Build
         run: dotnet build "$SOLUTION_FILE" --configuration Release --no-restore
 
+      - name: Install MongoDB test dependency
+        run: |
+          curl --fail --location --retry 3 --output /tmp/libssl1.1.deb https://launchpadlibrarian.net/774729480/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+          sudo apt-get install -y /tmp/libssl1.1.deb
+
       - name: Test
         run: dotnet test "$SOLUTION_FILE" --configuration Release --no-build --verbosity normal
