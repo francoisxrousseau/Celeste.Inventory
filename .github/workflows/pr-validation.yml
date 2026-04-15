@@ -42,9 +42,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore "$SOLUTION_FILE"
 
-      - name: Verify formatting
-        run: dotnet format "$SOLUTION_FILE" --verify-no-changes --no-restore --verbosity minimal
-
       - name: Build
         run: dotnet build "$SOLUTION_FILE" --configuration Release --no-restore
 

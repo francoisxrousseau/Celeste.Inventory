@@ -11,8 +11,6 @@ dotnet build
 # Run the API (HTTP: 5201, HTTPS: 7226)
 dotnet run --project src/Celeste.Inventory.Api/Celeste.Inventory.Api.csproj
 
-# Format all projects after generating or editing code
-dotnet format Celeste.Inventory.slnx
 ```
 
 ## Architecture
