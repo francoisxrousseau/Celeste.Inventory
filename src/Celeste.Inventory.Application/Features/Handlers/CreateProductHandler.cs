@@ -52,6 +52,9 @@ public sealed class CreateProductHandler(
             CreatedAt = request.CreatedAt,
         };
 
+        if (request.Variant is not null)
+            product.Variants = [CreateVariant(request.Variant, currentUserAccessor.UserId, request.CreatedAt)];
+
         await using var transaction = await unitOfWork.BeginAsync(cancellationToken);
         await repository.CreateAsync(product, cancellationToken);
         await eventPublisher.PublishCreatedAsync(product, cancellationToken);
@@ -60,5 +63,26 @@ public sealed class CreateProductHandler(
         logger.LogInformation("Created product with ID {ProductId}.", product.Id);
 
         return product.ToResponse();
+    }
+
+    private static Variant CreateVariant(
+        CreateProductVariantCommand request,
+        string? createdBy,
+        DateTime createdAt)
+    {
+        _ = Product.NormalizeSearchText(request.Sku)
+            ?? throw new ArgumentException("Variant SKU is required.", nameof(request));
+
+        return new Variant
+        {
+            Id = Guid.NewGuid(),
+            Sku = request.Sku.Trim(),
+            Price = request.Price,
+            DiscountInformations = request.DiscountInformations,
+            Status = request.Status,
+            Attributes = request.Attributes,
+            CreatedBy = createdBy,
+            CreatedAt = createdAt,
+        };
     }
 }

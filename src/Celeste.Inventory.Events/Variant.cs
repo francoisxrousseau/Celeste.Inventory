@@ -8,14 +8,14 @@ using Avro.Specific;
 /// </summary>
 public sealed class Variant : ISpecificRecord
 {
-    private const string SchemaJson = """
+    internal const string SchemaJson = """
 {
   "type": "record",
   "name": "Variant",
   "namespace": "Celeste.Inventory.Events",
   "fields": [
     { "name": "Id", "type": { "type": "string", "logicalType": "uuid" } },
-    { "name": "Sku", "type": "string" },
+    { "name": "Sku", "type": [ "null", "string" ], "default": null },
     { "name": "Price", "type": [ "null", { "type": "bytes", "logicalType": "decimal", "precision": 18, "scale": 2 } ], "default": null },
     { "name": "Discount", "type": [ "null", {
       "type": "record",
@@ -57,7 +57,7 @@ public sealed class Variant : ISpecificRecord
     /// <summary>
     ///     Gets or sets the SKU.
     /// </summary>
-    public string Sku { get; set; } = string.Empty;
+    public string? Sku { get; set; }
 
     /// <summary>
     ///     Gets or sets the optional price.

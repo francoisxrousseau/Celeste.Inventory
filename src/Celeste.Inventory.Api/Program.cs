@@ -25,6 +25,7 @@ builder.Services.AddManufacturerBootstrap(builder.Configuration);
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddDocumentTransformer<InventoryOpenApiExamplesTransformer>();
 });
 
 var app = builder.Build();

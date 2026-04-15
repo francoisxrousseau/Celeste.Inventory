@@ -48,6 +48,7 @@ public sealed class ProductsController(IMediator mediator) : ControllerBase
                 request.Status,
                 request.Category,
                 request.Tags,
+                request.Variant?.ToCommand(),
                 DateTime.UtcNow),
             cancellationToken);
         var apiResponse = response.ToApiModel();
@@ -206,5 +207,27 @@ public sealed class ProductsController(IMediator mediator) : ControllerBase
             cancellationToken);
 
         return NoContent();
+    }
+}
+
+internal static class CreateProductRequestMappingExtensions
+{
+    /// <summary>
+    ///     Maps a create-product variant request to an application command.
+    /// </summary>
+    /// <param name="request">
+    ///     The request model to map.
+    /// </param>
+    /// <returns>
+    ///     The mapped command payload.
+    /// </returns>
+    public static CreateProductVariantCommand ToCommand(this CreateVariantRequest request)
+    {
+        return new CreateProductVariantCommand(
+            request.Sku,
+            request.Price,
+            request.DiscountInformations?.ToDomain(),
+            request.Status,
+            request.Attributes?.Select(x => x.ToDomain()).ToList());
     }
 }

@@ -25,6 +25,9 @@ using Emit.Mediator;
 /// <param name="Tags">
 ///	The optional product tags.
 /// </param>
+/// <param name="Variant">
+///	The optional initial variant.
+/// </param>
 /// <param name="CreatedAt">
 ///	The UTC timestamp for the operation.
 /// </param>
@@ -35,4 +38,5 @@ public sealed record CreateProductCommand(
     ProductStatus Status,
     ProductCategory Category,
     IReadOnlyList<string>? Tags,
+    CreateProductVariantCommand? Variant,
     DateTime CreatedAt) : IRequest<ProductResponse>;

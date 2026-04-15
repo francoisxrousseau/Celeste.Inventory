@@ -93,4 +93,36 @@ public sealed class AvroDecimalSerializerTests
 
         Assert.True(stream.Length > 0);
     }
+
+    [Fact]
+    public void ProductCreatedEvent_WithInitialVariant_CanBeWrittenByApacheAvro()
+    {
+        var productEvent = ProductEventFactory.Created(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Celeste Tee",
+            "A cotton tee",
+            "Active",
+            "Apparel",
+            ["summer"],
+            new Variant
+            {
+                Id = Guid.NewGuid(),
+                Sku = "TEE-RED-M",
+                Price = AvroDecimalSerializer.Serialize(24.99m),
+                Status = "Active",
+            },
+            "alice",
+            new DateTime(2026, 4, 13, 12, 0, 0, DateTimeKind.Utc));
+
+        using var stream = new MemoryStream();
+        var writer = new SpecificDefaultWriter(productEvent.Schema);
+        var encoder = new BinaryEncoder(stream);
+
+        writer.Write(productEvent, encoder);
+
+        Assert.Equal(ProductEventTypes.Created, productEvent.EventType);
+        Assert.NotNull(productEvent.Variant);
+        Assert.True(stream.Length > 0);
+    }
 }

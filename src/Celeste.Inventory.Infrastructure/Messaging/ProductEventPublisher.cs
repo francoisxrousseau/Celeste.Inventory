@@ -33,6 +33,7 @@ public sealed class ProductEventPublisher(
                 product.Status.ToString(),
                 product.Category.ToString(),
                 product.Tags,
+                product.Variants?.FirstOrDefault(x => !x.IsDeleted) is { } variant ? MapVariant(variant) : null,
                 product.CreatedBy,
                 product.CreatedAt),
             cancellationToken);

@@ -36,4 +36,9 @@ public sealed class CreateProductRequest
     ///     Gets or sets the optional product tags.
     /// </summary>
     public List<string>? Tags { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the optional initial variant.
+    /// </summary>
+    public CreateVariantRequest? Variant { get; set; }
 }

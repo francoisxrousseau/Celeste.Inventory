@@ -21,6 +21,22 @@ public static class ProductEventFactory
         => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.Created, user, date);
 
     /// <summary>
+    ///     Creates a created-event payload with initial variant details.
+    /// </summary>
+    public static ProductEvent Created(
+        Guid id,
+        Guid manufacturerId,
+        string name,
+        string? description,
+        string status,
+        string? category,
+        IReadOnlyList<string>? tags,
+        Variant? variant,
+        string? user,
+        DateTime date)
+        => Create(id, manufacturerId, name, description, status, category, tags, ProductEventTypes.Created, variant, user, date);
+
+    /// <summary>
     ///     Creates an updated-event payload.
     /// </summary>
     public static ProductEvent Updated(

@@ -25,5 +25,11 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
 
         RuleForEach(x => x.Tags)
             .NotEmpty();
+
+        When(x => x.Variant is not null, () =>
+        {
+            RuleFor(x => x.Variant!)
+                .SetValidator(new CreateVariantRequestValidator());
+        });
     }
 }

@@ -40,6 +40,7 @@ public sealed class ProductHandlersTests
                 ProductStatus.Active,
                 ProductCategory.Apparel,
                 ["apparel", "cotton"],
+                null,
                 Utc(2026, 4, 9, 12, 0)),
             CancellationToken.None);
 
@@ -54,6 +55,51 @@ public sealed class ProductHandlersTests
         Assert.Equal(1, publisher.CreatedEvents.Count);
         Assert.Equal(1, unitOfWork.BeginCalls);
         Assert.Equal(1, unitOfWork.CommitCalls);
+    }
+
+    [Fact]
+    public async Task CreateHandler_WithInitialVariant_EmbedsVariantAndPublishesProductCreatedEvent()
+    {
+        var repository = new FakeProductRepository();
+        var publisher = new FakeProductEventPublisher();
+        var unitOfWork = new FakeUnitOfWork();
+        var currentUser = new FakeCurrentUserAccessor { UserId = "alice" };
+        var handler = new CreateProductHandler(
+            repository,
+            currentUser,
+            publisher,
+            unitOfWork,
+            NullLogger<CreateProductHandler>.Instance);
+
+        var response = await handler.HandleAsync(
+            new CreateProductCommand(
+                Guid.NewGuid(),
+                "Celeste Tee",
+                null,
+                ProductStatus.Active,
+                ProductCategory.Apparel,
+                null,
+                new CreateProductVariantCommand(
+                    "  TEE-RED-M  ",
+                    24.99m,
+                    new DiscountInformations
+                    {
+                        DiscountPercentage = 15m,
+                        DiscountStartAtUtc = Utc(2026, 4, 13, 12, 0),
+                        DiscountEndAtUtc = Utc(2026, 4, 20, 12, 0),
+                    },
+                    ProductStatus.Active,
+                    [new VariantAttribute { Name = "Color", Value = "Red" }]),
+                Utc(2026, 4, 9, 12, 0)),
+            CancellationToken.None);
+
+        var variant = Assert.Single(response.Variants!);
+        Assert.Equal("TEE-RED-M", variant.Sku);
+        Assert.Equal(24.99m, variant.Price);
+        Assert.Equal("alice", repository.Items[0].Variants![0].CreatedBy);
+        Assert.Equal(Utc(2026, 4, 9, 12, 0), repository.Items[0].Variants![0].CreatedAt);
+        Assert.Equal(1, publisher.CreatedEvents.Count);
+        Assert.Single(publisher.CreatedEvents[0].Variants!);
     }
 
     [Fact]
@@ -290,6 +336,26 @@ public sealed class ProductHandlersTests
             return Task.CompletedTask;
         }
 
+        public Task<Product?> AddVariantAsync(
+            Guid productId,
+            Variant variant,
+            string? createdBy,
+            DateTime createdAt,
+            CancellationToken cancellationToken = default)
+        {
+            var item = Items.SingleOrDefault(x => x.Id == productId && !x.IsDeleted);
+            if (item is null)
+                return Task.FromResult<Product?>(null);
+
+            variant.CreatedBy = createdBy;
+            variant.CreatedAt = createdAt;
+            item.Variants = [.. (item.Variants ?? Array.Empty<Variant>()), variant];
+            item.LastUpdatedBy = createdBy;
+            item.LastUpdatedAt = createdAt;
+
+            return Task.FromResult<Product?>(item);
+        }
+
         public Task<Product?> GetByIdAsync(Guid id, bool includeDeleted = false, CancellationToken cancellationToken = default)
         {
             var item = Items.SingleOrDefault(x => x.Id == id && (includeDeleted || !x.IsDeleted));
@@ -307,6 +373,49 @@ public sealed class ProductHandlersTests
             item.DeletedBy = deletedBy;
             item.DeletedAt = deletedAt;
             return Task.FromResult<Product?>(item);
+        }
+
+        public Task<Product?> DeleteVariantAsync(
+            Guid productId,
+            Guid variantId,
+            string? deletedBy,
+            DateTime deletedAt,
+            CancellationToken cancellationToken = default)
+        {
+            var variant = Items.SingleOrDefault(x => x.Id == productId && !x.IsDeleted)
+                ?.Variants?.SingleOrDefault(x => x.Id == variantId && !x.IsDeleted);
+
+            if (variant is null)
+                return Task.FromResult<Product?>(null);
+
+            variant.DeletedBy = deletedBy;
+            variant.DeletedAt = deletedAt;
+
+            return GetByIdAsync(productId, includeDeleted: false, cancellationToken);
+        }
+
+        public Task<Variant?> GetVariantByIdAsync(
+            Guid productId,
+            Guid variantId,
+            bool includeDeleted = false,
+            CancellationToken cancellationToken = default)
+        {
+            var variant = Items.SingleOrDefault(x => x.Id == productId && !x.IsDeleted)
+                ?.Variants?.SingleOrDefault(x => x.Id == variantId && (includeDeleted || !x.IsDeleted));
+
+            return Task.FromResult(variant);
+        }
+
+        public Task<IReadOnlyList<Variant>> GetVariantsAsync(
+            Guid productId,
+            bool includeDeleted = false,
+            CancellationToken cancellationToken = default)
+        {
+            var variants = Items.SingleOrDefault(x => x.Id == productId && !x.IsDeleted)
+                ?.Variants?.Where(x => includeDeleted || !x.IsDeleted).ToList()
+                ?? [];
+
+            return Task.FromResult<IReadOnlyList<Variant>>(variants);
         }
 
         public Task<IReadOnlyList<Product>> SearchAsync(
@@ -360,6 +469,35 @@ public sealed class ProductHandlersTests
             return Task.FromResult<Product?>(item);
         }
 
+        public Task<Product?> UpdateVariantAsync(
+            Guid productId,
+            Guid variantId,
+            string sku,
+            decimal price,
+            DiscountInformations? discountInformations,
+            ProductStatus status,
+            IReadOnlyList<VariantAttribute>? attributes,
+            string? updatedBy,
+            DateTime updatedAt,
+            CancellationToken cancellationToken = default)
+        {
+            var variant = Items.SingleOrDefault(x => x.Id == productId && !x.IsDeleted)
+                ?.Variants?.SingleOrDefault(x => x.Id == variantId && !x.IsDeleted);
+
+            if (variant is null)
+                return Task.FromResult<Product?>(null);
+
+            variant.Sku = sku;
+            variant.Price = price;
+            variant.DiscountInformations = discountInformations;
+            variant.Status = status;
+            variant.Attributes = attributes;
+            variant.LastUpdatedBy = updatedBy;
+            variant.LastUpdatedAt = updatedAt;
+
+            return GetByIdAsync(productId, includeDeleted: false, cancellationToken);
+        }
+
         private IEnumerable<Product> ApplyFilter(string? searchText, bool includeDeleted)
         {
             return Items.Where(x => includeDeleted || !x.IsDeleted)
@@ -380,7 +518,14 @@ public sealed class ProductHandlersTests
 
         public List<(Product Product, string? DeletedBy, DateTime DeletedAt)> DeletedEvents { get; } = [];
 
-        public int TotalPublished => CreatedEvents.Count + UpdatedEvents.Count + DeletedEvents.Count;
+        public List<(Product Product, Variant Variant)> VariantCreatedEvents { get; } = [];
+
+        public List<(Product Product, Variant Variant)> VariantUpdatedEvents { get; } = [];
+
+        public List<(Product Product, Variant Variant, string? DeletedBy, DateTime DeletedAt)> VariantDeletedEvents { get; } = [];
+
+        public int TotalPublished => CreatedEvents.Count + UpdatedEvents.Count + DeletedEvents.Count +
+            VariantCreatedEvents.Count + VariantUpdatedEvents.Count + VariantDeletedEvents.Count;
 
         public Task PublishCreatedAsync(Product product, CancellationToken cancellationToken = default)
         {
@@ -401,6 +546,35 @@ public sealed class ProductHandlersTests
             CancellationToken cancellationToken = default)
         {
             DeletedEvents.Add((product, deletedBy, deletedAt));
+            return Task.CompletedTask;
+        }
+
+        public Task PublishVariantCreatedAsync(
+            Product product,
+            Variant variant,
+            CancellationToken cancellationToken = default)
+        {
+            VariantCreatedEvents.Add((product, variant));
+            return Task.CompletedTask;
+        }
+
+        public Task PublishVariantUpdatedAsync(
+            Product product,
+            Variant variant,
+            CancellationToken cancellationToken = default)
+        {
+            VariantUpdatedEvents.Add((product, variant));
+            return Task.CompletedTask;
+        }
+
+        public Task PublishVariantDeletedAsync(
+            Product product,
+            Variant variant,
+            string? deletedBy,
+            DateTime deletedAt,
+            CancellationToken cancellationToken = default)
+        {
+            VariantDeletedEvents.Add((product, variant, deletedBy, deletedAt));
             return Task.CompletedTask;
         }
     }

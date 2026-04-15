@@ -8,7 +8,11 @@ using Avro.Specific;
 /// </summary>
 public sealed class ProductEvent : ISpecificRecord
 {
-    private const string SchemaJson = """
+    private static readonly Schema ParsedSchema = Schema.Parse(CreateSchemaJson());
+
+    private static string CreateSchemaJson()
+    {
+        return $$"""
 {
   "type": "record",
   "name": "ProductEvent",
@@ -25,36 +29,7 @@ public sealed class ProductEvent : ISpecificRecord
         { "name": "Description", "type": [ "null", "string" ], "default": null }
       ]
     }], "default": null },
-    { "name": "Variant", "type": [ "null", {
-      "type": "record",
-      "name": "Variant",
-      "fields": [
-        { "name": "Id", "type": { "type": "string", "logicalType": "uuid" } },
-        { "name": "Sku", "type": "string" },
-        { "name": "Price", "type": [ "null", { "type": "bytes", "logicalType": "decimal", "precision": 18, "scale": 2 } ], "default": null },
-        { "name": "Discount", "type": [ "null", {
-          "type": "record",
-          "name": "DiscountInformations",
-          "fields": [
-            { "name": "DiscountPercentage", "type": "bytes", "logicalType": "decimal", "precision": 18, "scale": 2 },
-            { "name": "DiscountStartAtUtc", "type": { "type": "long", "logicalType": "timestamp-millis" } },
-            { "name": "DiscountEndAtUtc", "type": { "type": "long", "logicalType": "timestamp-millis" } }
-          ]
-        }], "default": null },
-        { "name": "Status", "type": [ "null", "string" ], "default": null },
-        { "name": "Attributes", "type": [ "null", {
-          "type": "array",
-          "items": {
-            "type": "record",
-            "name": "VariantAttribute",
-            "fields": [
-              { "name": "Name", "type": "string" },
-              { "name": "Value", "type": "string" }
-            ]
-          }
-        }], "default": null }
-      ]
-    }], "default": null },
+    { "name": "Variant", "type": [ "null", {{Variant.SchemaJson}} ], "default": null },
     { "name": "Status", "type": [ "null", "string" ], "default": null },
     { "name": "Category", "type": [ "null", "string" ], "default": null },
     { "name": "Tags", "type": [ "null", { "type": "array", "items": "string" } ], "default": null },
@@ -63,8 +38,7 @@ public sealed class ProductEvent : ISpecificRecord
   ]
 }
 """;
-
-    private static readonly Schema ParsedSchema = Schema.Parse(SchemaJson);
+    }
 
     /// <summary>
     ///     Gets the Avro schema for the event.
