@@ -18,7 +18,7 @@ public sealed class Variant : AuditableEntity
     public string Sku { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the variant price.
+    ///     Gets or sets the variant price. test
     /// </summary>
     public decimal Price { get; set; }
 
