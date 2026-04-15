@@ -16,7 +16,7 @@ public sealed class Manufacturer : AuditableEntity
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-     ///     Gets the contact email for the manufacturer.
+     ///     Gets the contact email for the manufacturer test.
      /// </summary>
     public string? ContactEmail { get; set; }
 
